@@ -42,8 +42,8 @@ public class Login extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         txtUsername = new javax.swing.JTextField();
-        txtPassword = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        jPasswordField1 = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
@@ -57,7 +57,7 @@ public class Login extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setMinimumSize(new java.awt.Dimension(1020, 520));
         jPanel1.setPreferredSize(new java.awt.Dimension(1020, 550));
-        jPanel1.setLayout(new java.awt.GridLayout());
+        jPanel1.setLayout(new java.awt.GridLayout(1, 0));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -102,9 +102,6 @@ public class Login extends javax.swing.JFrame {
         txtUsername.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         jPanel4.add(txtUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 260, 200, 30));
 
-        txtPassword.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        jPanel4.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 310, 200, 30));
-
         jButton1.setBackground(new java.awt.Color(36, 136, 255));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 255));
@@ -116,6 +113,7 @@ public class Login extends javax.swing.JFrame {
             }
         });
         jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 380, 150, 40));
+        jPanel4.add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 310, 200, 30));
 
         jPanel1.add(jPanel4);
 
@@ -129,7 +127,7 @@ public class Login extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.setVisible(false);
-        Dashboard app = new Dashboard();
+        Template app = new Template();
         app.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -183,7 +181,7 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JTextField txtPassword;
+    private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 }

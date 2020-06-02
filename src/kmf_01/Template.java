@@ -5,6 +5,7 @@
  */
 package kmf_01;
 
+import kmf_01.content.MasterBandara;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,12 +28,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import kmf_01.content.*;
 
 /**
  *
  * @author samod
  */
-public class Dashboard extends javax.swing.JFrame {
+public class Template extends javax.swing.JFrame {
 
     /**
      * Creates new form Dashboard
@@ -41,14 +43,17 @@ public class Dashboard extends javax.swing.JFrame {
     private int width = 240;
     private boolean state = true;
     
-    public Dashboard() {
+    public Template() {
         initComponents();
         
-        Content.add("dashboard", Dashboard);
-        Content.add("permintaan_pickup", permintaanPickUpPage);
+        MasterBandara bandara = new MasterBandara();
+        Dashboard dashboard = new Dashboard();
         
-        NavBar.add("customerServiceMenu", CustomerService);
-        NavBar.add("dispatchDepartmentMenu", DispatchDepartment);
+        Content.add("dashboard", dashboard.getPanel());
+        Content.add("masterBandara", bandara.getPanel());
+        
+        NavBar.add("customerServiceMenu", CS_Dept);
+        NavBar.add("dispatchDepartmentMenu", Dispatch_Dept);
         
         contentLayout = (CardLayout) Content.getLayout();   // Membuat content layout, agar tampilan konten bisa diganti-ganti
         navigationLayout = (CardLayout) NavBar.getLayout(); // Membuat navigation layout, agar tampilan navigasi setiap role bisa diganti-ganti
@@ -60,7 +65,7 @@ public class Dashboard extends javax.swing.JFrame {
         
         dashboard_Click();
         
-        RegisterCSMenu(); // Mendaftarkan kumpulan fungsi menu Customer service
+        RegisterHRGAMenu(); // Mendaftarkan kumpulan fungsi menu Customer service
         
         
         //Untuk toggle menu sidebar menjadi full lagi ketika user klik maximize
@@ -87,12 +92,8 @@ public class Dashboard extends javax.swing.JFrame {
     
     // Fungsi untuk mendaftarkan fungsi2 menu yang ada di CS
     // Ini nanti dipanggil di Constructor
-    private void RegisterCSMenu() {
-    }
-    
-    // Untuk menampilkan halaman Home dari Customer Service
-    private void dashboard_Click() {
-        homeMenuCS.addMouseListener(new MouseAdapter()  
+    private void RegisterHRGAMenu() {
+        homeMenuHRGA.addMouseListener(new MouseAdapter()  
         {  
             public void mouseClicked(MouseEvent e)  
             {  
@@ -100,16 +101,40 @@ public class Dashboard extends javax.swing.JFrame {
             }  
             
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                homeMenuCS.setBackground(new Color(45, 45, 45));
+                homeMenuHRGA.setBackground(new Color(45, 45, 45));
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                homeMenuCS.setBackground(new Color(51,51,51));
+                homeMenuHRGA.setBackground(new Color(51,51,51));
             }
             
         }); 
+        
+        masterBandara.addMouseListener(new MouseAdapter()  
+        {  
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "masterBandara");
+            }  
+            
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                masterBandara.setBackground(new Color(45, 45, 45));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                masterBandara.setBackground(new Color(51,51,51));
+            }
+        }); 
     }
     
+    // Untuk menampilkan halaman Home dari Customer Service
+    private void dashboard_Click() {
+        
+    }
+    
+    private void masterBandara_Click() {
+        
+    }
     
     // Fungsi untuk button logout
     private void logout_Click() {
@@ -117,7 +142,11 @@ public class Dashboard extends javax.swing.JFrame {
         {  
             public void mouseClicked(MouseEvent e)  
             {  
-               // Close this window, and show the login page
+//                setVisible(false);
+                dispose();
+//                System.exit(0);
+                Login login = new Login();
+                login.setVisible(true);
             }  
             
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -207,35 +236,32 @@ public class Dashboard extends javax.swing.JFrame {
         btnLogout = new javax.swing.JLabel();
         BottomNav = new javax.swing.JSplitPane();
         NavBar = new javax.swing.JPanel();
-        CustomerService = new javax.swing.JPanel();
+        HRGA_Dept = new javax.swing.JPanel();
+        homeMenuHRGA = new javax.swing.JLabel();
+        masterBandara = new javax.swing.JLabel();
+        imageProfileHR = new javax.swing.JLabel();
+        userNameHR = new javax.swing.JLabel();
+        roleHR = new javax.swing.JLabel();
+        masterDepartment = new javax.swing.JLabel();
+        masterDepartment1 = new javax.swing.JLabel();
+        masterDepartment2 = new javax.swing.JLabel();
+        masterDepartment3 = new javax.swing.JLabel();
+        masterDepartment4 = new javax.swing.JLabel();
+        masterDepartment5 = new javax.swing.JLabel();
+        masterDepartment6 = new javax.swing.JLabel();
+        CS_Dept = new javax.swing.JPanel();
         homeMenuCS = new javax.swing.JLabel();
         permintaanPickupMenuCS = new javax.swing.JLabel();
         imageProfileCS = new javax.swing.JLabel();
         userNameCS = new javax.swing.JLabel();
         roleCS = new javax.swing.JLabel();
-        DispatchDepartment = new javax.swing.JPanel();
+        Dispatch_Dept = new javax.swing.JPanel();
         userNameDispatch = new javax.swing.JLabel();
         roleDispatch = new javax.swing.JLabel();
         imageProfileDispatch = new javax.swing.JLabel();
         homeMenuDispatch = new javax.swing.JLabel();
         pengambilanBarangMenuDispatch = new javax.swing.JLabel();
         Content = new javax.swing.JPanel();
-        Dashboard = new javax.swing.JPanel();
-        DashboardTitle = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        ReportSummary = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jPanel10 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
-        DContent = new javax.swing.JPanel();
-        jPanel11 = new javax.swing.JPanel();
-        permintaanPickUpPage = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PT. KMF");
@@ -325,7 +351,175 @@ public class Dashboard extends javax.swing.JFrame {
         NavBar.setPreferredSize(new java.awt.Dimension(98, 695));
         NavBar.setLayout(new java.awt.CardLayout());
 
-        CustomerService.setBackground(new java.awt.Color(51, 51, 51));
+        HRGA_Dept.setBackground(new java.awt.Color(51, 51, 51));
+
+        homeMenuHRGA.setBackground(new java.awt.Color(51, 51, 51));
+        homeMenuHRGA.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        homeMenuHRGA.setForeground(new java.awt.Color(255, 255, 255));
+        homeMenuHRGA.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        homeMenuHRGA.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/home_24px.png"))); // NOI18N
+        homeMenuHRGA.setText("Home");
+        homeMenuHRGA.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        homeMenuHRGA.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        homeMenuHRGA.setIconTextGap(25);
+        homeMenuHRGA.setOpaque(true);
+
+        masterBandara.setBackground(new java.awt.Color(51, 51, 51));
+        masterBandara.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        masterBandara.setForeground(new java.awt.Color(255, 255, 255));
+        masterBandara.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        masterBandara.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/airport_24px.png"))); // NOI18N
+        masterBandara.setText("Master Bandara");
+        masterBandara.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        masterBandara.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        masterBandara.setIconTextGap(25);
+        masterBandara.setOpaque(true);
+
+        imageProfileHR.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        imageProfileHR.setForeground(new java.awt.Color(255, 255, 255));
+        imageProfileHR.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/male_user_50px.png"))); // NOI18N
+
+        userNameHR.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        userNameHR.setForeground(new java.awt.Color(255, 255, 255));
+        userNameHR.setText("HR GA 1");
+
+        roleHR.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        roleHR.setForeground(new java.awt.Color(255, 255, 255));
+        roleHR.setText("HR & GA Department");
+
+        masterDepartment.setBackground(new java.awt.Color(51, 51, 51));
+        masterDepartment.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        masterDepartment.setForeground(new java.awt.Color(255, 255, 255));
+        masterDepartment.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        masterDepartment.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/department_24px.png"))); // NOI18N
+        masterDepartment.setText("Master Department");
+        masterDepartment.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        masterDepartment.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        masterDepartment.setIconTextGap(25);
+        masterDepartment.setOpaque(true);
+
+        masterDepartment1.setBackground(new java.awt.Color(51, 51, 51));
+        masterDepartment1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        masterDepartment1.setForeground(new java.awt.Color(255, 255, 255));
+        masterDepartment1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        masterDepartment1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/staff_24px.png"))); // NOI18N
+        masterDepartment1.setText("Master Staff");
+        masterDepartment1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        masterDepartment1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        masterDepartment1.setIconTextGap(25);
+        masterDepartment1.setOpaque(true);
+
+        masterDepartment2.setBackground(new java.awt.Color(51, 51, 51));
+        masterDepartment2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        masterDepartment2.setForeground(new java.awt.Color(255, 255, 255));
+        masterDepartment2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        masterDepartment2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/office_24px.png"))); // NOI18N
+        masterDepartment2.setText("Master Kantor Pusat");
+        masterDepartment2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        masterDepartment2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        masterDepartment2.setIconTextGap(25);
+        masterDepartment2.setOpaque(true);
+
+        masterDepartment3.setBackground(new java.awt.Color(51, 51, 51));
+        masterDepartment3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        masterDepartment3.setForeground(new java.awt.Color(255, 255, 255));
+        masterDepartment3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        masterDepartment3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/officebranch_24px.png"))); // NOI18N
+        masterDepartment3.setText("Master Kantor Cabang");
+        masterDepartment3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        masterDepartment3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        masterDepartment3.setIconTextGap(25);
+        masterDepartment3.setOpaque(true);
+
+        masterDepartment4.setBackground(new java.awt.Color(51, 51, 51));
+        masterDepartment4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        masterDepartment4.setForeground(new java.awt.Color(255, 255, 255));
+        masterDepartment4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        masterDepartment4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/warehouse_24px.png"))); // NOI18N
+        masterDepartment4.setText("Master Manifested");
+        masterDepartment4.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        masterDepartment4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        masterDepartment4.setIconTextGap(25);
+        masterDepartment4.setOpaque(true);
+
+        masterDepartment5.setBackground(new java.awt.Color(51, 51, 51));
+        masterDepartment5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        masterDepartment5.setForeground(new java.awt.Color(255, 255, 255));
+        masterDepartment5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        masterDepartment5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/driver_24px.png"))); // NOI18N
+        masterDepartment5.setText("Master Driver");
+        masterDepartment5.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        masterDepartment5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        masterDepartment5.setIconTextGap(25);
+        masterDepartment5.setOpaque(true);
+
+        masterDepartment6.setBackground(new java.awt.Color(51, 51, 51));
+        masterDepartment6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        masterDepartment6.setForeground(new java.awt.Color(255, 255, 255));
+        masterDepartment6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        masterDepartment6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/location_24px.png"))); // NOI18N
+        masterDepartment6.setText("Master Destinasi");
+        masterDepartment6.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        masterDepartment6.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        masterDepartment6.setIconTextGap(25);
+        masterDepartment6.setOpaque(true);
+
+        javax.swing.GroupLayout HRGA_DeptLayout = new javax.swing.GroupLayout(HRGA_Dept);
+        HRGA_Dept.setLayout(HRGA_DeptLayout);
+        HRGA_DeptLayout.setHorizontalGroup(
+            HRGA_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(homeMenuHRGA, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(masterBandara, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(HRGA_DeptLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(imageProfileHR)
+                .addGap(18, 18, 18)
+                .addGroup(HRGA_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(userNameHR)
+                    .addComponent(roleHR))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(masterDepartment, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(masterDepartment1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(masterDepartment2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(masterDepartment3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(masterDepartment4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(masterDepartment5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(masterDepartment6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        HRGA_DeptLayout.setVerticalGroup(
+            HRGA_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(HRGA_DeptLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(HRGA_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(HRGA_DeptLayout.createSequentialGroup()
+                        .addComponent(userNameHR)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(roleHR))
+                    .addComponent(imageProfileHR))
+                .addGap(36, 36, 36)
+                .addComponent(homeMenuHRGA, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(masterBandara, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(masterDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(masterDepartment1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(masterDepartment2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(masterDepartment3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(masterDepartment4, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(masterDepartment5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(masterDepartment6, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(162, Short.MAX_VALUE))
+        );
+
+        NavBar.add(HRGA_Dept, "card2");
+
+        CS_Dept.setBackground(new java.awt.Color(51, 51, 51));
 
         homeMenuCS.setBackground(new java.awt.Color(51, 51, 51));
         homeMenuCS.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -361,27 +555,27 @@ public class Dashboard extends javax.swing.JFrame {
         roleCS.setForeground(new java.awt.Color(255, 255, 255));
         roleCS.setText("Customer Service");
 
-        javax.swing.GroupLayout CustomerServiceLayout = new javax.swing.GroupLayout(CustomerService);
-        CustomerService.setLayout(CustomerServiceLayout);
-        CustomerServiceLayout.setHorizontalGroup(
-            CustomerServiceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout CS_DeptLayout = new javax.swing.GroupLayout(CS_Dept);
+        CS_Dept.setLayout(CS_DeptLayout);
+        CS_DeptLayout.setHorizontalGroup(
+            CS_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(homeMenuCS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(permintaanPickupMenuCS, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
-            .addGroup(CustomerServiceLayout.createSequentialGroup()
+            .addComponent(permintaanPickupMenuCS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(CS_DeptLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(imageProfileCS)
                 .addGap(18, 18, 18)
-                .addGroup(CustomerServiceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(CS_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(userNameCS)
                     .addComponent(roleCS))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        CustomerServiceLayout.setVerticalGroup(
-            CustomerServiceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(CustomerServiceLayout.createSequentialGroup()
+        CS_DeptLayout.setVerticalGroup(
+            CS_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(CS_DeptLayout.createSequentialGroup()
                 .addGap(50, 50, 50)
-                .addGroup(CustomerServiceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(CustomerServiceLayout.createSequentialGroup()
+                .addGroup(CS_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(CS_DeptLayout.createSequentialGroup()
                         .addComponent(userNameCS)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(roleCS))
@@ -390,12 +584,12 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(homeMenuCS, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(permintaanPickupMenuCS, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(432, Short.MAX_VALUE))
+                .addContainerGap(477, Short.MAX_VALUE))
         );
 
-        NavBar.add(CustomerService, "card2");
+        NavBar.add(CS_Dept, "card2");
 
-        DispatchDepartment.setBackground(new java.awt.Color(51, 51, 51));
+        Dispatch_Dept.setBackground(new java.awt.Color(51, 51, 51));
 
         userNameDispatch.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         userNameDispatch.setForeground(new java.awt.Color(255, 255, 255));
@@ -431,27 +625,27 @@ public class Dashboard extends javax.swing.JFrame {
         pengambilanBarangMenuDispatch.setIconTextGap(25);
         pengambilanBarangMenuDispatch.setOpaque(true);
 
-        javax.swing.GroupLayout DispatchDepartmentLayout = new javax.swing.GroupLayout(DispatchDepartment);
-        DispatchDepartment.setLayout(DispatchDepartmentLayout);
-        DispatchDepartmentLayout.setHorizontalGroup(
-            DispatchDepartmentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(DispatchDepartmentLayout.createSequentialGroup()
+        javax.swing.GroupLayout Dispatch_DeptLayout = new javax.swing.GroupLayout(Dispatch_Dept);
+        Dispatch_Dept.setLayout(Dispatch_DeptLayout);
+        Dispatch_DeptLayout.setHorizontalGroup(
+            Dispatch_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Dispatch_DeptLayout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addComponent(imageProfileDispatch)
                 .addGap(18, 18, 18)
-                .addGroup(DispatchDepartmentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(Dispatch_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(userNameDispatch)
                     .addComponent(roleDispatch))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(homeMenuDispatch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(pengambilanBarangMenuDispatch, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+            .addComponent(pengambilanBarangMenuDispatch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        DispatchDepartmentLayout.setVerticalGroup(
-            DispatchDepartmentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(DispatchDepartmentLayout.createSequentialGroup()
+        Dispatch_DeptLayout.setVerticalGroup(
+            Dispatch_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Dispatch_DeptLayout.createSequentialGroup()
                 .addGap(50, 50, 50)
-                .addGroup(DispatchDepartmentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(DispatchDepartmentLayout.createSequentialGroup()
+                .addGroup(Dispatch_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(Dispatch_DeptLayout.createSequentialGroup()
                         .addComponent(userNameDispatch)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(roleDispatch))
@@ -463,179 +657,11 @@ public class Dashboard extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        NavBar.add(DispatchDepartment, "card3");
+        NavBar.add(Dispatch_Dept, "card3");
 
         BottomNav.setLeftComponent(NavBar);
 
         Content.setLayout(new java.awt.CardLayout());
-
-        Dashboard.setBackground(new java.awt.Color(225, 228, 230));
-        Dashboard.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
-        Dashboard.setLayout(new javax.swing.BoxLayout(Dashboard, javax.swing.BoxLayout.Y_AXIS));
-
-        DashboardTitle.setBackground(new java.awt.Color(225, 228, 230));
-        DashboardTitle.setMaximumSize(new java.awt.Dimension(32767, 70));
-        DashboardTitle.setPreferredSize(new java.awt.Dimension(1136, 70));
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("Dashboard");
-
-        javax.swing.GroupLayout DashboardTitleLayout = new javax.swing.GroupLayout(DashboardTitle);
-        DashboardTitle.setLayout(DashboardTitleLayout);
-        DashboardTitleLayout.setHorizontalGroup(
-            DashboardTitleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(DashboardTitleLayout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(jLabel1)
-                .addContainerGap(379, Short.MAX_VALUE))
-        );
-        DashboardTitleLayout.setVerticalGroup(
-            DashboardTitleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(DashboardTitleLayout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jLabel1)
-                .addContainerGap(19, Short.MAX_VALUE))
-        );
-
-        Dashboard.add(DashboardTitle);
-
-        ReportSummary.setBackground(new java.awt.Color(225, 228, 230));
-        ReportSummary.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        ReportSummary.setMaximumSize(new java.awt.Dimension(32767, 104));
-        ReportSummary.setLayout(new java.awt.GridLayout(1, 0));
-
-        jPanel3.setBackground(new java.awt.Color(225, 228, 230));
-        jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
-        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
-
-        jPanel4.setBackground(new java.awt.Color(23, 162, 184));
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 90, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 133, Short.MAX_VALUE)
-        );
-
-        jPanel3.add(jPanel4);
-
-        ReportSummary.add(jPanel3);
-
-        jPanel5.setBackground(new java.awt.Color(225, 228, 230));
-        jPanel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
-        jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.LINE_AXIS));
-
-        jPanel10.setBackground(new java.awt.Color(40, 167, 69));
-
-        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
-        jPanel10.setLayout(jPanel10Layout);
-        jPanel10Layout.setHorizontalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 90, Short.MAX_VALUE)
-        );
-        jPanel10Layout.setVerticalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 133, Short.MAX_VALUE)
-        );
-
-        jPanel5.add(jPanel10);
-
-        ReportSummary.add(jPanel5);
-
-        jPanel6.setBackground(new java.awt.Color(225, 228, 230));
-        jPanel6.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
-        jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
-
-        jPanel2.setBackground(new java.awt.Color(255, 193, 7));
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 90, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 133, Short.MAX_VALUE)
-        );
-
-        jPanel6.add(jPanel2);
-
-        ReportSummary.add(jPanel6);
-
-        jPanel7.setBackground(new java.awt.Color(225, 228, 230));
-        jPanel7.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
-        jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
-
-        jPanel9.setBackground(new java.awt.Color(220, 53, 69));
-
-        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
-        jPanel9.setLayout(jPanel9Layout);
-        jPanel9Layout.setHorizontalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 90, Short.MAX_VALUE)
-        );
-        jPanel9Layout.setVerticalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 133, Short.MAX_VALUE)
-        );
-
-        jPanel7.add(jPanel9);
-
-        ReportSummary.add(jPanel7);
-
-        Dashboard.add(ReportSummary);
-
-        DContent.setBackground(new java.awt.Color(225, 228, 230));
-        DContent.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        DContent.setPreferredSize(new java.awt.Dimension(1136, 400));
-        DContent.setLayout(new javax.swing.BoxLayout(DContent, javax.swing.BoxLayout.LINE_AXIS));
-
-        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
-        jPanel11.setLayout(jPanel11Layout);
-        jPanel11Layout.setHorizontalGroup(
-            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 484, Short.MAX_VALUE)
-        );
-        jPanel11Layout.setVerticalGroup(
-            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 409, Short.MAX_VALUE)
-        );
-
-        DContent.add(jPanel11);
-
-        Dashboard.add(DContent);
-
-        Content.add(Dashboard, "card2");
-
-        permintaanPickUpPage.setBackground(new java.awt.Color(238, 245, 248));
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel4.setText("Permintaan Pick Up");
-
-        javax.swing.GroupLayout permintaanPickUpPageLayout = new javax.swing.GroupLayout(permintaanPickUpPage);
-        permintaanPickUpPage.setLayout(permintaanPickUpPageLayout);
-        permintaanPickUpPageLayout.setHorizontalGroup(
-            permintaanPickUpPageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(permintaanPickUpPageLayout.createSequentialGroup()
-                .addGap(36, 36, 36)
-                .addComponent(jLabel4)
-                .addContainerGap(361, Short.MAX_VALUE))
-        );
-        permintaanPickUpPageLayout.setVerticalGroup(
-            permintaanPickUpPageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(permintaanPickUpPageLayout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(jLabel4)
-                .addContainerGap(609, Short.MAX_VALUE))
-        );
-
-        Content.add(permintaanPickUpPage, "card3");
-
         BottomNav.setRightComponent(Content);
 
         Container.setRightComponent(BottomNav);
@@ -663,64 +689,62 @@ public class Dashboard extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Dashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Template.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Dashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Template.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Dashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Template.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Dashboard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Template.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Dashboard().setVisible(true);
+                new Template().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSplitPane BottomNav;
+    private javax.swing.JPanel CS_Dept;
     private javax.swing.JSplitPane Container;
     private javax.swing.JPanel Content;
-    private javax.swing.JPanel CustomerService;
-    private javax.swing.JPanel DContent;
-    private javax.swing.JPanel Dashboard;
-    private javax.swing.JPanel DashboardTitle;
-    private javax.swing.JPanel DispatchDepartment;
+    private javax.swing.JPanel Dispatch_Dept;
+    private javax.swing.JPanel HRGA_Dept;
     private javax.swing.JPanel LeftTopNav;
     private javax.swing.JPanel NavBar;
     private javax.swing.JPanel NavBrand;
-    private javax.swing.JPanel ReportSummary;
     private javax.swing.JSplitPane TopNav;
     private javax.swing.JLabel btnLogout;
     private javax.swing.JLabel homeMenuCS;
     private javax.swing.JLabel homeMenuDispatch;
+    private javax.swing.JLabel homeMenuHRGA;
     private javax.swing.JLabel imageProfileCS;
     private javax.swing.JLabel imageProfileDispatch;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel imageProfileHR;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JLabel masterBandara;
+    private javax.swing.JLabel masterDepartment;
+    private javax.swing.JLabel masterDepartment1;
+    private javax.swing.JLabel masterDepartment2;
+    private javax.swing.JLabel masterDepartment3;
+    private javax.swing.JLabel masterDepartment4;
+    private javax.swing.JLabel masterDepartment5;
+    private javax.swing.JLabel masterDepartment6;
     private javax.swing.JLabel pengambilanBarangMenuDispatch;
-    private javax.swing.JPanel permintaanPickUpPage;
     private javax.swing.JLabel permintaanPickupMenuCS;
     private javax.swing.JLabel roleCS;
     private javax.swing.JLabel roleDispatch;
+    private javax.swing.JLabel roleHR;
     private javax.swing.JLabel toggleNav;
     private javax.swing.JLabel userNameCS;
     private javax.swing.JLabel userNameDispatch;
+    private javax.swing.JLabel userNameHR;
     // End of variables declaration//GEN-END:variables
 }
