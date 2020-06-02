@@ -195,8 +195,8 @@ public class Dashboard extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
+        jProgressBar1 = new javax.swing.JProgressBar();
         Container = new javax.swing.JSplitPane();
         TopNav = new javax.swing.JSplitPane();
         NavBrand = new javax.swing.JPanel();
@@ -424,7 +424,7 @@ public class Dashboard extends javax.swing.JFrame {
         pengambilanBarangMenuDispatch.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         pengambilanBarangMenuDispatch.setForeground(new java.awt.Color(255, 255, 255));
         pengambilanBarangMenuDispatch.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        pengambilanBarangMenuDispatch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/home_24px.png"))); // NOI18N
+        pengambilanBarangMenuDispatch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/package_24px.png"))); // NOI18N
         pengambilanBarangMenuDispatch.setText("Pengambilan Barang");
         pengambilanBarangMenuDispatch.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
         pengambilanBarangMenuDispatch.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -502,7 +502,7 @@ public class Dashboard extends javax.swing.JFrame {
         ReportSummary.setBackground(new java.awt.Color(225, 228, 230));
         ReportSummary.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         ReportSummary.setMaximumSize(new java.awt.Dimension(32767, 104));
-        ReportSummary.setLayout(new java.awt.GridLayout());
+        ReportSummary.setLayout(new java.awt.GridLayout(1, 0));
 
         jPanel3.setBackground(new java.awt.Color(225, 228, 230));
         jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
@@ -713,6 +713,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JLabel pengambilanBarangMenuDispatch;
     private javax.swing.JPanel permintaanPickUpPage;
     private javax.swing.JLabel permintaanPickupMenuCS;
