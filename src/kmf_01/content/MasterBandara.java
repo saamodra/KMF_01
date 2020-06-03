@@ -53,6 +53,7 @@ public class MasterBandara extends javax.swing.JFrame {
         txtKota = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtAlamat = new javax.swing.JTextArea();
+        jButton5 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         Data = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -122,12 +123,12 @@ public class MasterBandara extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel7.setText("Alamat");
 
-        jButton1.setText("Tambah");
+        jButton1.setText("Simpan");
         jButton1.setMaximumSize(new java.awt.Dimension(100, 30));
         jButton1.setMinimumSize(new java.awt.Dimension(0, 30));
         jButton1.setPreferredSize(new java.awt.Dimension(100, 30));
 
-        jButton3.setText("Edit");
+        jButton3.setText("Ubah");
         jButton3.setMaximumSize(new java.awt.Dimension(73, 30));
         jButton3.setMinimumSize(new java.awt.Dimension(0, 30));
         jButton3.setPreferredSize(new java.awt.Dimension(100, 23));
@@ -149,13 +150,16 @@ public class MasterBandara extends javax.swing.JFrame {
         txtAlamat.setRows(5);
         jScrollPane1.setViewportView(txtAlamat);
 
+        jButton5.setText("Batal");
+        jButton5.setPreferredSize(new java.awt.Dimension(73, 30));
+
         javax.swing.GroupLayout FormLayout = new javax.swing.GroupLayout(Form);
         Form.setLayout(FormLayout);
         FormLayout.setHorizontalGroup(
             FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(FormLayout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2)
                     .addGroup(FormLayout.createSequentialGroup()
                         .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -175,7 +179,8 @@ public class MasterBandara extends javax.swing.JFrame {
                             .addComponent(txtNamaBandara)
                             .addComponent(txtNegara)
                             .addComponent(txtKota)
-                            .addComponent(jScrollPane1))))
+                            .addComponent(jScrollPane1)))
+                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(34, Short.MAX_VALUE))
         );
         FormLayout.setVerticalGroup(
@@ -208,7 +213,9 @@ public class MasterBandara extends javax.swing.JFrame {
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(168, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(120, Short.MAX_VALUE))
         );
 
         Content.add(Form);
@@ -371,6 +378,7 @@ public class MasterBandara extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
