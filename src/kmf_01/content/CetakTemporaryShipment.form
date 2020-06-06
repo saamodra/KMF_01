@@ -72,7 +72,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="937" max="32767" attributes="0"/>
+                      <EmptySpace pref="865" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -92,7 +92,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="24" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Pengambilan Barang"/>
+                <Property name="text" type="java.lang.String" value="Cetak Temporary Shipment"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -148,7 +148,7 @@
                                       <Group type="102" attributes="0">
                                           <Component id="btnBatal" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                                          <Component id="btnKirim" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btnCetak" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <Component id="txtNamaPengirim" max="32767" attributes="0"/>
                                       <Component id="txtNamaPenerima" max="32767" attributes="0"/>
@@ -158,7 +158,7 @@
                                       <Component id="txtAlamatTujuan" max="32767" attributes="0"/>
                                       <Component id="txtBeratPaket" max="32767" attributes="0"/>
                                       <Component id="txtBiayaPaket" max="32767" attributes="0"/>
-                                      <Component id="cmbKantorCabang" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="cmbDriver" alignment="0" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -214,11 +214,11 @@
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="cmbKantorCabang" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="cmbDriver" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="66" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="btnKirim" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="btnCetak" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="btnBatal" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace pref="57" max="32767" attributes="0"/>
@@ -232,7 +232,7 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Segoe UI" size="20" style="1"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Form Pengambilan Barang"/>
+                    <Property name="text" type="java.lang.String" value="Form Temporary Shipment"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel3">
@@ -275,9 +275,9 @@
                     <Property name="text" type="java.lang.String" value="Berat Paket"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JButton" name="btnKirim">
+                <Component class="javax.swing.JButton" name="btnCetak">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Kirim"/>
+                    <Property name="text" type="java.lang.String" value="Cetak"/>
                     <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[100, 30]"/>
                     </Property>
@@ -289,7 +289,7 @@
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnKirimActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCetakActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="btnBatal">
@@ -305,6 +305,9 @@
                       <Dimension value="[100, 23]"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnBatalActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JTextField" name="txtNamaPengirim">
                   <Properties>
@@ -399,10 +402,10 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Tahoma" size="14" style="0"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Kantor Cabang"/>
+                    <Property name="text" type="java.lang.String" value="Driver"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JComboBox" name="cmbKantorCabang">
+                <Component class="javax.swing.JComboBox" name="cmbDriver">
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                       <StringArray count="0"/>

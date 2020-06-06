@@ -5,7 +5,7 @@
  */
 package kmf_01;
 
-import kmf_01.content.MasterBandara;
+import kmf_01.content.PengambilanBarang;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
 import kmf_01.content.*;
 
 /**
@@ -35,7 +36,10 @@ import kmf_01.content.*;
  * @author samod
  */
 public class Template extends javax.swing.JFrame {
-
+    DBConnect connection = new DBConnect("KMF_01");
+    DefaultTableModel model;
+    private String id_permintaan;
+    
     /**
      * Creates new form Dashboard
      */
@@ -46,35 +50,38 @@ public class Template extends javax.swing.JFrame {
     public Template() {
         initComponents();
         
-        MasterBandara bandara = new MasterBandara();
         Dashboard dashboard = new Dashboard();
         PermintaanPickup permintaanPickup = new PermintaanPickup();
+        InputPaket inputPaket = new InputPaket();
+        CetakTemporaryShipment cetakTemporaryShipment = new CetakTemporaryShipment();
         PengambilanBarang pengambilanBarang = new PengambilanBarang();
         CetakConnote cetakConnote = new CetakConnote();
         
         Content.add("dashboard", dashboard.getPanel());
-        Content.add("masterBandara", bandara.getPanel());
         Content.add("permintaanPickUp", permintaanPickup.getPanel());
         Content.add("pengambilanBarang", pengambilanBarang.getPanel());
         Content.add("cetakConnote", cetakConnote.getPanel());
+        Content.add("tambahPaket", inputPaket.getPanel());
+        Content.add("cetakTemporaryShipment", cetakTemporaryShipment.getPanel());
         
-        NavBar.add("customerServiceMenu", CS_Dept);
-        NavBar.add("dispatchDepartmentMenu", Dispatch_Dept);
+        NavBar.add("Customer Service", CS_Dept);
+        NavBar.add("Dispatch", Dispatch_Dept);
+        NavBar.add("Staff Kantor Cabang", StaffKantor);
         
         contentLayout = (CardLayout) Content.getLayout();   // Membuat content layout, agar tampilan konten bisa diganti-ganti
         navigationLayout = (CardLayout) NavBar.getLayout(); // Membuat navigation layout, agar tampilan navigasi setiap role bisa diganti-ganti
         
-        navigationLayout.show(NavBar, "customerServiceMenu");
-        
+        setNavigation("Samodra", "Customer Service");
         logout_Click(); //Memanggil fungsi button logout supaya bisa berfungsi
         
         toggleNav_Click(); //Untuk toggle Sidebar Navigation
         
-        dashboard_Click();
-        
-        RegisterHRGAMenu(); // Mendaftarkan kumpulan fungsi menu HRGA
         
         RegisterCSMenu(); // Mendaftarkan kumpulan fungsi menu Customer service
+        
+        RegisterDispatchMenu();
+        
+        RegisterStaffKantorMenu();
         
         
         //Untuk toggle menu sidebar menjadi full lagi ketika user klik maximize
@@ -98,6 +105,17 @@ public class Template extends javax.swing.JFrame {
         });
     }
     
+    public void setNavigation(String username, String navName) {
+        userNameCS.setText(username);
+        userNameDispatch.setText(username);
+        userNameStaffKantor.setText(username);
+        navigationLayout.show(NavBar, navName);
+    }
+    
+    public void setContent(String navName) {
+        navigationLayout.show(NavBar, navName);
+    }
+    
     private void RegisterCSMenu() {
         homeMenuCS.addMouseListener(new MouseAdapter()  
         {  
@@ -116,28 +134,11 @@ public class Template extends javax.swing.JFrame {
             
         }); 
         
-        kelolaPelanggan.addMouseListener(new MouseAdapter()  
-        {  
-            public void mouseClicked(MouseEvent e)  
-            {  
-               contentLayout.show(Content, "kelolaPelanggan");
-            }  
-            
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                kelolaPelanggan.setBackground(new Color(43, 43, 43));
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                kelolaPelanggan.setBackground(new Color(51,51,51));
-            }
-            
-        }); 
-        
         permintaanPickupMenuCS.addMouseListener(new MouseAdapter()  
         {  
             public void mouseClicked(MouseEvent e)  
-            {  
-               contentLayout.show(Content, "permintaanPickUp");
+            {
+                contentLayout.show(Content, "permintaanPickUp");
             }  
             
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -149,6 +150,10 @@ public class Template extends javax.swing.JFrame {
             }
         });
         
+        
+    }
+    
+    private void RegisterDispatchMenu() {
         pengambilanBarang.addMouseListener(new MouseAdapter()  
         {  
             public void mouseClicked(MouseEvent e)  
@@ -162,6 +167,40 @@ public class Template extends javax.swing.JFrame {
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 pengambilanBarang.setBackground(new Color(51,51,51));
+            }
+        }); 
+    }
+    
+    private void RegisterStaffKantorMenu() {
+        temporaryShipmentMenu.addMouseListener(new MouseAdapter()  
+        {  
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "cetakTemporaryShipment");
+            }  
+            
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                temporaryShipmentMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                temporaryShipmentMenu.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
+        tambahPaketMenu.addMouseListener(new MouseAdapter()  
+        {  
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "tambahPaket");
+            }  
+            
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                tambahPaketMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                tambahPaketMenu.setBackground(new Color(51,51,51));
             }
         }); 
         
@@ -183,61 +222,13 @@ public class Template extends javax.swing.JFrame {
     }
     
     
-    // Fungsi untuk mendaftarkan fungsi2 menu yang ada di CS
-    // Ini nanti dipanggil di Constructor
-    private void RegisterHRGAMenu() {
-        homeMenuHRGA.addMouseListener(new MouseAdapter()  
-        {  
-            public void mouseClicked(MouseEvent e)  
-            {  
-               contentLayout.show(Content, "dashboard");
-            }  
-            
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                homeMenuHRGA.setBackground(new Color(45, 45, 45));
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                homeMenuHRGA.setBackground(new Color(51,51,51));
-            }
-            
-        }); 
-        
-        masterBandara.addMouseListener(new MouseAdapter()  
-        {  
-            public void mouseClicked(MouseEvent e)  
-            {  
-               contentLayout.show(Content, "masterBandara");
-            }  
-            
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                masterBandara.setBackground(new Color(45, 45, 45));
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                masterBandara.setBackground(new Color(51,51,51));
-            }
-        }); 
-    }
-    
-    // Untuk menampilkan halaman Home dari Customer Service
-    private void dashboard_Click() {
-        
-    }
-    
-    private void masterBandara_Click() {
-        
-    }
-    
     // Fungsi untuk button logout
     private void logout_Click() {
         btnLogout.addMouseListener(new MouseAdapter()  
         {  
             public void mouseClicked(MouseEvent e)  
             {  
-//                setVisible(false);
                 dispose();
-//                System.exit(0);
                 Login login = new Login();
                 login.setVisible(true);
             }  
@@ -335,28 +326,31 @@ public class Template extends javax.swing.JFrame {
         imageProfileCS = new javax.swing.JLabel();
         userNameCS = new javax.swing.JLabel();
         roleCS = new javax.swing.JLabel();
-        pengambilanBarang = new javax.swing.JLabel();
-        cetakConnote = new javax.swing.JLabel();
-        kelolaPelanggan = new javax.swing.JLabel();
-        HRGA_Dept = new javax.swing.JPanel();
-        homeMenuHRGA = new javax.swing.JLabel();
-        masterBandara = new javax.swing.JLabel();
-        imageProfileHR = new javax.swing.JLabel();
-        userNameHR = new javax.swing.JLabel();
-        roleHR = new javax.swing.JLabel();
-        masterDepartment = new javax.swing.JLabel();
-        masterDepartment1 = new javax.swing.JLabel();
-        masterDepartment2 = new javax.swing.JLabel();
-        masterDepartment3 = new javax.swing.JLabel();
-        masterDepartment4 = new javax.swing.JLabel();
-        masterDepartment5 = new javax.swing.JLabel();
-        masterDepartment6 = new javax.swing.JLabel();
         Dispatch_Dept = new javax.swing.JPanel();
         userNameDispatch = new javax.swing.JLabel();
         roleDispatch = new javax.swing.JLabel();
         imageProfileDispatch = new javax.swing.JLabel();
         homeMenuDispatch = new javax.swing.JLabel();
-        pengambilanBarangMenuDispatch = new javax.swing.JLabel();
+        pengambilanBarang = new javax.swing.JLabel();
+        StaffKantor = new javax.swing.JPanel();
+        userNameStaffKantor = new javax.swing.JLabel();
+        roleStaffKantor = new javax.swing.JLabel();
+        imageProfileDispatch1 = new javax.swing.JLabel();
+        homeMenuStaffKantor = new javax.swing.JLabel();
+        temporaryShipmentMenu = new javax.swing.JLabel();
+        cetakConnote = new javax.swing.JLabel();
+        tambahPaketMenu = new javax.swing.JLabel();
+        cargoManifestMenu = new javax.swing.JLabel();
+        pendataanBarangMasukMenu = new javax.swing.JLabel();
+        pengirimanBarangMenu = new javax.swing.JLabel();
+        National_Transport_Dept = new javax.swing.JPanel();
+        homeMenuCS1 = new javax.swing.JLabel();
+        cetakSMUMenu = new javax.swing.JLabel();
+        imageProfileCS1 = new javax.swing.JLabel();
+        userNameCS1 = new javax.swing.JLabel();
+        roleCS1 = new javax.swing.JLabel();
+        pengirimanCargoMenu = new javax.swing.JLabel();
+        penerimaanCargoMenu = new javax.swing.JLabel();
         Content = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -483,39 +477,6 @@ public class Template extends javax.swing.JFrame {
         roleCS.setForeground(new java.awt.Color(255, 255, 255));
         roleCS.setText("Customer Service");
 
-        pengambilanBarang.setBackground(new java.awt.Color(51, 51, 51));
-        pengambilanBarang.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        pengambilanBarang.setForeground(new java.awt.Color(255, 255, 255));
-        pengambilanBarang.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        pengambilanBarang.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/location_24px.png"))); // NOI18N
-        pengambilanBarang.setText("Pengambilan Barang");
-        pengambilanBarang.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        pengambilanBarang.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        pengambilanBarang.setIconTextGap(25);
-        pengambilanBarang.setOpaque(true);
-
-        cetakConnote.setBackground(new java.awt.Color(51, 51, 51));
-        cetakConnote.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        cetakConnote.setForeground(new java.awt.Color(255, 255, 255));
-        cetakConnote.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        cetakConnote.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/print_24px.png"))); // NOI18N
-        cetakConnote.setText("Cetak Connote");
-        cetakConnote.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        cetakConnote.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        cetakConnote.setIconTextGap(25);
-        cetakConnote.setOpaque(true);
-
-        kelolaPelanggan.setBackground(new java.awt.Color(51, 51, 51));
-        kelolaPelanggan.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        kelolaPelanggan.setForeground(new java.awt.Color(255, 255, 255));
-        kelolaPelanggan.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        kelolaPelanggan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/staff_24px.png"))); // NOI18N
-        kelolaPelanggan.setText("Kelola Pelanggan");
-        kelolaPelanggan.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        kelolaPelanggan.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        kelolaPelanggan.setIconTextGap(25);
-        kelolaPelanggan.setOpaque(true);
-
         javax.swing.GroupLayout CS_DeptLayout = new javax.swing.GroupLayout(CS_Dept);
         CS_Dept.setLayout(CS_DeptLayout);
         CS_DeptLayout.setHorizontalGroup(
@@ -530,9 +491,6 @@ public class Template extends javax.swing.JFrame {
                     .addComponent(userNameCS)
                     .addComponent(roleCS))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(pengambilanBarang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(cetakConnote, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(kelolaPelanggan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         CS_DeptLayout.setVerticalGroup(
             CS_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -547,185 +505,11 @@ public class Template extends javax.swing.JFrame {
                 .addGap(36, 36, 36)
                 .addComponent(homeMenuCS, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(kelolaPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
                 .addComponent(permintaanPickupMenuCS, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(pengambilanBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(cetakConnote, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(342, Short.MAX_VALUE))
+                .addContainerGap(477, Short.MAX_VALUE))
         );
 
         NavBar.add(CS_Dept, "card2");
-
-        HRGA_Dept.setBackground(new java.awt.Color(51, 51, 51));
-
-        homeMenuHRGA.setBackground(new java.awt.Color(51, 51, 51));
-        homeMenuHRGA.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        homeMenuHRGA.setForeground(new java.awt.Color(255, 255, 255));
-        homeMenuHRGA.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        homeMenuHRGA.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/home_24px.png"))); // NOI18N
-        homeMenuHRGA.setText("Home");
-        homeMenuHRGA.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        homeMenuHRGA.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        homeMenuHRGA.setIconTextGap(25);
-        homeMenuHRGA.setOpaque(true);
-
-        masterBandara.setBackground(new java.awt.Color(51, 51, 51));
-        masterBandara.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        masterBandara.setForeground(new java.awt.Color(255, 255, 255));
-        masterBandara.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        masterBandara.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/airport_24px.png"))); // NOI18N
-        masterBandara.setText("Master Bandara");
-        masterBandara.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        masterBandara.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        masterBandara.setIconTextGap(25);
-        masterBandara.setOpaque(true);
-
-        imageProfileHR.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        imageProfileHR.setForeground(new java.awt.Color(255, 255, 255));
-        imageProfileHR.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/male_user_50px.png"))); // NOI18N
-
-        userNameHR.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        userNameHR.setForeground(new java.awt.Color(255, 255, 255));
-        userNameHR.setText("HR GA 1");
-
-        roleHR.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
-        roleHR.setForeground(new java.awt.Color(255, 255, 255));
-        roleHR.setText("HR & GA Department");
-
-        masterDepartment.setBackground(new java.awt.Color(51, 51, 51));
-        masterDepartment.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        masterDepartment.setForeground(new java.awt.Color(255, 255, 255));
-        masterDepartment.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        masterDepartment.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/department_24px.png"))); // NOI18N
-        masterDepartment.setText("Master Department");
-        masterDepartment.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        masterDepartment.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        masterDepartment.setIconTextGap(25);
-        masterDepartment.setOpaque(true);
-
-        masterDepartment1.setBackground(new java.awt.Color(51, 51, 51));
-        masterDepartment1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        masterDepartment1.setForeground(new java.awt.Color(255, 255, 255));
-        masterDepartment1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        masterDepartment1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/staff_24px.png"))); // NOI18N
-        masterDepartment1.setText("Master Staff");
-        masterDepartment1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        masterDepartment1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        masterDepartment1.setIconTextGap(25);
-        masterDepartment1.setOpaque(true);
-
-        masterDepartment2.setBackground(new java.awt.Color(51, 51, 51));
-        masterDepartment2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        masterDepartment2.setForeground(new java.awt.Color(255, 255, 255));
-        masterDepartment2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        masterDepartment2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/office_24px.png"))); // NOI18N
-        masterDepartment2.setText("Master Kantor Pusat");
-        masterDepartment2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        masterDepartment2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        masterDepartment2.setIconTextGap(25);
-        masterDepartment2.setOpaque(true);
-
-        masterDepartment3.setBackground(new java.awt.Color(51, 51, 51));
-        masterDepartment3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        masterDepartment3.setForeground(new java.awt.Color(255, 255, 255));
-        masterDepartment3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        masterDepartment3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/officebranch_24px.png"))); // NOI18N
-        masterDepartment3.setText("Master Kantor Cabang");
-        masterDepartment3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        masterDepartment3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        masterDepartment3.setIconTextGap(25);
-        masterDepartment3.setOpaque(true);
-
-        masterDepartment4.setBackground(new java.awt.Color(51, 51, 51));
-        masterDepartment4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        masterDepartment4.setForeground(new java.awt.Color(255, 255, 255));
-        masterDepartment4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        masterDepartment4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/warehouse_24px.png"))); // NOI18N
-        masterDepartment4.setText("Master Manifested");
-        masterDepartment4.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        masterDepartment4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        masterDepartment4.setIconTextGap(25);
-        masterDepartment4.setOpaque(true);
-
-        masterDepartment5.setBackground(new java.awt.Color(51, 51, 51));
-        masterDepartment5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        masterDepartment5.setForeground(new java.awt.Color(255, 255, 255));
-        masterDepartment5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        masterDepartment5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/driver_24px.png"))); // NOI18N
-        masterDepartment5.setText("Master Driver");
-        masterDepartment5.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        masterDepartment5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        masterDepartment5.setIconTextGap(25);
-        masterDepartment5.setOpaque(true);
-
-        masterDepartment6.setBackground(new java.awt.Color(51, 51, 51));
-        masterDepartment6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        masterDepartment6.setForeground(new java.awt.Color(255, 255, 255));
-        masterDepartment6.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        masterDepartment6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/location_24px.png"))); // NOI18N
-        masterDepartment6.setText("Master Destinasi");
-        masterDepartment6.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        masterDepartment6.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        masterDepartment6.setIconTextGap(25);
-        masterDepartment6.setOpaque(true);
-
-        javax.swing.GroupLayout HRGA_DeptLayout = new javax.swing.GroupLayout(HRGA_Dept);
-        HRGA_Dept.setLayout(HRGA_DeptLayout);
-        HRGA_DeptLayout.setHorizontalGroup(
-            HRGA_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(homeMenuHRGA, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(masterBandara, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(HRGA_DeptLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(imageProfileHR)
-                .addGap(18, 18, 18)
-                .addGroup(HRGA_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(userNameHR)
-                    .addComponent(roleHR))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(masterDepartment, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(masterDepartment1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(masterDepartment2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(masterDepartment3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(masterDepartment4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(masterDepartment5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(masterDepartment6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        HRGA_DeptLayout.setVerticalGroup(
-            HRGA_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(HRGA_DeptLayout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addGroup(HRGA_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(HRGA_DeptLayout.createSequentialGroup()
-                        .addComponent(userNameHR)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(roleHR))
-                    .addComponent(imageProfileHR))
-                .addGap(36, 36, 36)
-                .addComponent(homeMenuHRGA, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(masterBandara, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(masterDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(masterDepartment1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(masterDepartment2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(masterDepartment3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(masterDepartment4, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(masterDepartment5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(masterDepartment6, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(162, Short.MAX_VALUE))
-        );
-
-        NavBar.add(HRGA_Dept, "card2");
 
         Dispatch_Dept.setBackground(new java.awt.Color(51, 51, 51));
 
@@ -752,16 +536,16 @@ public class Template extends javax.swing.JFrame {
         homeMenuDispatch.setIconTextGap(25);
         homeMenuDispatch.setOpaque(true);
 
-        pengambilanBarangMenuDispatch.setBackground(new java.awt.Color(51, 51, 51));
-        pengambilanBarangMenuDispatch.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        pengambilanBarangMenuDispatch.setForeground(new java.awt.Color(255, 255, 255));
-        pengambilanBarangMenuDispatch.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        pengambilanBarangMenuDispatch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/package_24px.png"))); // NOI18N
-        pengambilanBarangMenuDispatch.setText("Pengambilan Barang");
-        pengambilanBarangMenuDispatch.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        pengambilanBarangMenuDispatch.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        pengambilanBarangMenuDispatch.setIconTextGap(25);
-        pengambilanBarangMenuDispatch.setOpaque(true);
+        pengambilanBarang.setBackground(new java.awt.Color(51, 51, 51));
+        pengambilanBarang.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        pengambilanBarang.setForeground(new java.awt.Color(255, 255, 255));
+        pengambilanBarang.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        pengambilanBarang.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/location_24px.png"))); // NOI18N
+        pengambilanBarang.setText("Pengambilan Barang");
+        pengambilanBarang.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        pengambilanBarang.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        pengambilanBarang.setIconTextGap(25);
+        pengambilanBarang.setOpaque(true);
 
         javax.swing.GroupLayout Dispatch_DeptLayout = new javax.swing.GroupLayout(Dispatch_Dept);
         Dispatch_Dept.setLayout(Dispatch_DeptLayout);
@@ -776,7 +560,7 @@ public class Template extends javax.swing.JFrame {
                     .addComponent(roleDispatch))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(homeMenuDispatch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(pengambilanBarangMenuDispatch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pengambilanBarang, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         Dispatch_DeptLayout.setVerticalGroup(
             Dispatch_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -791,11 +575,249 @@ public class Template extends javax.swing.JFrame {
                 .addGap(36, 36, 36)
                 .addComponent(homeMenuDispatch, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(pengambilanBarangMenuDispatch, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pengambilanBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         NavBar.add(Dispatch_Dept, "card3");
+
+        StaffKantor.setBackground(new java.awt.Color(51, 51, 51));
+
+        userNameStaffKantor.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        userNameStaffKantor.setForeground(new java.awt.Color(255, 255, 255));
+        userNameStaffKantor.setText("Staff Kantor Cabang 1");
+
+        roleStaffKantor.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        roleStaffKantor.setForeground(new java.awt.Color(255, 255, 255));
+        roleStaffKantor.setText("Staff Kantor Cabang");
+
+        imageProfileDispatch1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        imageProfileDispatch1.setForeground(new java.awt.Color(255, 255, 255));
+        imageProfileDispatch1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/male_user_50px.png"))); // NOI18N
+
+        homeMenuStaffKantor.setBackground(new java.awt.Color(51, 51, 51));
+        homeMenuStaffKantor.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        homeMenuStaffKantor.setForeground(new java.awt.Color(255, 255, 255));
+        homeMenuStaffKantor.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        homeMenuStaffKantor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/home_24px.png"))); // NOI18N
+        homeMenuStaffKantor.setText("Home");
+        homeMenuStaffKantor.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        homeMenuStaffKantor.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        homeMenuStaffKantor.setIconTextGap(25);
+        homeMenuStaffKantor.setOpaque(true);
+
+        temporaryShipmentMenu.setBackground(new java.awt.Color(51, 51, 51));
+        temporaryShipmentMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        temporaryShipmentMenu.setForeground(new java.awt.Color(255, 255, 255));
+        temporaryShipmentMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        temporaryShipmentMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/note_24px.png"))); // NOI18N
+        temporaryShipmentMenu.setText("Temporary Shipment");
+        temporaryShipmentMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        temporaryShipmentMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        temporaryShipmentMenu.setIconTextGap(25);
+        temporaryShipmentMenu.setOpaque(true);
+
+        cetakConnote.setBackground(new java.awt.Color(51, 51, 51));
+        cetakConnote.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cetakConnote.setForeground(new java.awt.Color(255, 255, 255));
+        cetakConnote.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        cetakConnote.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/print_24px.png"))); // NOI18N
+        cetakConnote.setText("Cetak Connote");
+        cetakConnote.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        cetakConnote.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        cetakConnote.setIconTextGap(25);
+        cetakConnote.setOpaque(true);
+
+        tambahPaketMenu.setBackground(new java.awt.Color(51, 51, 51));
+        tambahPaketMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tambahPaketMenu.setForeground(new java.awt.Color(255, 255, 255));
+        tambahPaketMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        tambahPaketMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/package_24px.png"))); // NOI18N
+        tambahPaketMenu.setText("Tambah Paket");
+        tambahPaketMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        tambahPaketMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        tambahPaketMenu.setIconTextGap(25);
+        tambahPaketMenu.setOpaque(true);
+
+        cargoManifestMenu.setBackground(new java.awt.Color(51, 51, 51));
+        cargoManifestMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cargoManifestMenu.setForeground(new java.awt.Color(255, 255, 255));
+        cargoManifestMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        cargoManifestMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/shipping_container_24px.png"))); // NOI18N
+        cargoManifestMenu.setText("Cargo Manifest");
+        cargoManifestMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        cargoManifestMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        cargoManifestMenu.setIconTextGap(25);
+        cargoManifestMenu.setOpaque(true);
+
+        pendataanBarangMasukMenu.setBackground(new java.awt.Color(51, 51, 51));
+        pendataanBarangMasukMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        pendataanBarangMasukMenu.setForeground(new java.awt.Color(255, 255, 255));
+        pendataanBarangMasukMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        pendataanBarangMasukMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/down_left_24px.png"))); // NOI18N
+        pendataanBarangMasukMenu.setText("Pendataan Barang Masuk");
+        pendataanBarangMasukMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        pendataanBarangMasukMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        pendataanBarangMasukMenu.setIconTextGap(25);
+        pendataanBarangMasukMenu.setOpaque(true);
+
+        pengirimanBarangMenu.setBackground(new java.awt.Color(51, 51, 51));
+        pengirimanBarangMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        pengirimanBarangMenu.setForeground(new java.awt.Color(255, 255, 255));
+        pengirimanBarangMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        pengirimanBarangMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/up_right_24px.png"))); // NOI18N
+        pengirimanBarangMenu.setText("Pengiriman Barang");
+        pengirimanBarangMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        pengirimanBarangMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        pengirimanBarangMenu.setIconTextGap(25);
+        pengirimanBarangMenu.setOpaque(true);
+
+        javax.swing.GroupLayout StaffKantorLayout = new javax.swing.GroupLayout(StaffKantor);
+        StaffKantor.setLayout(StaffKantorLayout);
+        StaffKantorLayout.setHorizontalGroup(
+            StaffKantorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(StaffKantorLayout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(imageProfileDispatch1)
+                .addGap(18, 18, 18)
+                .addGroup(StaffKantorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(userNameStaffKantor)
+                    .addComponent(roleStaffKantor))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(homeMenuStaffKantor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(temporaryShipmentMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cetakConnote, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(tambahPaketMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cargoManifestMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pendataanBarangMasukMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pengirimanBarangMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        StaffKantorLayout.setVerticalGroup(
+            StaffKantorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(StaffKantorLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(StaffKantorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(StaffKantorLayout.createSequentialGroup()
+                        .addComponent(userNameStaffKantor)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(roleStaffKantor))
+                    .addComponent(imageProfileDispatch1))
+                .addGap(36, 36, 36)
+                .addComponent(homeMenuStaffKantor, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(temporaryShipmentMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(tambahPaketMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(cetakConnote, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(cargoManifestMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(pendataanBarangMasukMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(pengirimanBarangMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        NavBar.add(StaffKantor, "card3");
+
+        National_Transport_Dept.setBackground(new java.awt.Color(51, 51, 51));
+
+        homeMenuCS1.setBackground(new java.awt.Color(51, 51, 51));
+        homeMenuCS1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        homeMenuCS1.setForeground(new java.awt.Color(255, 255, 255));
+        homeMenuCS1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        homeMenuCS1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/home_24px.png"))); // NOI18N
+        homeMenuCS1.setText("Home");
+        homeMenuCS1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        homeMenuCS1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        homeMenuCS1.setIconTextGap(25);
+        homeMenuCS1.setOpaque(true);
+
+        cetakSMUMenu.setBackground(new java.awt.Color(51, 51, 51));
+        cetakSMUMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cetakSMUMenu.setForeground(new java.awt.Color(255, 255, 255));
+        cetakSMUMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        cetakSMUMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/print_24px.png"))); // NOI18N
+        cetakSMUMenu.setText("Cetak SMU");
+        cetakSMUMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        cetakSMUMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        cetakSMUMenu.setIconTextGap(25);
+        cetakSMUMenu.setOpaque(true);
+
+        imageProfileCS1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        imageProfileCS1.setForeground(new java.awt.Color(255, 255, 255));
+        imageProfileCS1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/male_user_50px.png"))); // NOI18N
+
+        userNameCS1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        userNameCS1.setForeground(new java.awt.Color(255, 255, 255));
+        userNameCS1.setText("NTD 1");
+
+        roleCS1.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        roleCS1.setForeground(new java.awt.Color(255, 255, 255));
+        roleCS1.setText("National Transport Dept.");
+
+        pengirimanCargoMenu.setBackground(new java.awt.Color(51, 51, 51));
+        pengirimanCargoMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        pengirimanCargoMenu.setForeground(new java.awt.Color(255, 255, 255));
+        pengirimanCargoMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        pengirimanCargoMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/up_right_24px.png"))); // NOI18N
+        pengirimanCargoMenu.setText("Pengiriman Cargo");
+        pengirimanCargoMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        pengirimanCargoMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        pengirimanCargoMenu.setIconTextGap(25);
+        pengirimanCargoMenu.setOpaque(true);
+
+        penerimaanCargoMenu.setBackground(new java.awt.Color(51, 51, 51));
+        penerimaanCargoMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        penerimaanCargoMenu.setForeground(new java.awt.Color(255, 255, 255));
+        penerimaanCargoMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        penerimaanCargoMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/down_left_24px.png"))); // NOI18N
+        penerimaanCargoMenu.setText("Penerimaan Cargo");
+        penerimaanCargoMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        penerimaanCargoMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        penerimaanCargoMenu.setIconTextGap(25);
+        penerimaanCargoMenu.setOpaque(true);
+
+        javax.swing.GroupLayout National_Transport_DeptLayout = new javax.swing.GroupLayout(National_Transport_Dept);
+        National_Transport_Dept.setLayout(National_Transport_DeptLayout);
+        National_Transport_DeptLayout.setHorizontalGroup(
+            National_Transport_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(homeMenuCS1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cetakSMUMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(National_Transport_DeptLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(imageProfileCS1)
+                .addGap(18, 18, 18)
+                .addGroup(National_Transport_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(userNameCS1)
+                    .addComponent(roleCS1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(pengirimanCargoMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(penerimaanCargoMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        National_Transport_DeptLayout.setVerticalGroup(
+            National_Transport_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(National_Transport_DeptLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(National_Transport_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(National_Transport_DeptLayout.createSequentialGroup()
+                        .addComponent(userNameCS1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(roleCS1))
+                    .addComponent(imageProfileCS1))
+                .addGap(36, 36, 36)
+                .addComponent(homeMenuCS1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(cetakSMUMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(pengirimanCargoMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(penerimaanCargoMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(387, Short.MAX_VALUE))
+        );
+
+        NavBar.add(National_Transport_Dept, "card2");
 
         BottomNav.setLeftComponent(NavBar);
 
@@ -852,40 +874,43 @@ public class Template extends javax.swing.JFrame {
     private javax.swing.JSplitPane Container;
     private javax.swing.JPanel Content;
     private javax.swing.JPanel Dispatch_Dept;
-    private javax.swing.JPanel HRGA_Dept;
     private javax.swing.JPanel LeftTopNav;
+    private javax.swing.JPanel National_Transport_Dept;
     private javax.swing.JPanel NavBar;
     private javax.swing.JPanel NavBrand;
+    private javax.swing.JPanel StaffKantor;
     private javax.swing.JSplitPane TopNav;
     private javax.swing.JLabel btnLogout;
+    private javax.swing.JLabel cargoManifestMenu;
     private javax.swing.JLabel cetakConnote;
+    private javax.swing.JLabel cetakSMUMenu;
     private javax.swing.JLabel homeMenuCS;
+    private javax.swing.JLabel homeMenuCS1;
     private javax.swing.JLabel homeMenuDispatch;
-    private javax.swing.JLabel homeMenuHRGA;
+    private javax.swing.JLabel homeMenuStaffKantor;
     private javax.swing.JLabel imageProfileCS;
+    private javax.swing.JLabel imageProfileCS1;
     private javax.swing.JLabel imageProfileDispatch;
-    private javax.swing.JLabel imageProfileHR;
+    private javax.swing.JLabel imageProfileDispatch1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JProgressBar jProgressBar1;
-    private javax.swing.JLabel kelolaPelanggan;
-    private javax.swing.JLabel masterBandara;
-    private javax.swing.JLabel masterDepartment;
-    private javax.swing.JLabel masterDepartment1;
-    private javax.swing.JLabel masterDepartment2;
-    private javax.swing.JLabel masterDepartment3;
-    private javax.swing.JLabel masterDepartment4;
-    private javax.swing.JLabel masterDepartment5;
-    private javax.swing.JLabel masterDepartment6;
+    private javax.swing.JLabel pendataanBarangMasukMenu;
+    private javax.swing.JLabel penerimaanCargoMenu;
     private javax.swing.JLabel pengambilanBarang;
-    private javax.swing.JLabel pengambilanBarangMenuDispatch;
+    private javax.swing.JLabel pengirimanBarangMenu;
+    private javax.swing.JLabel pengirimanCargoMenu;
     private javax.swing.JLabel permintaanPickupMenuCS;
     private javax.swing.JLabel roleCS;
+    private javax.swing.JLabel roleCS1;
     private javax.swing.JLabel roleDispatch;
-    private javax.swing.JLabel roleHR;
+    private javax.swing.JLabel roleStaffKantor;
+    private javax.swing.JLabel tambahPaketMenu;
+    private javax.swing.JLabel temporaryShipmentMenu;
     private javax.swing.JLabel toggleNav;
     private javax.swing.JLabel userNameCS;
+    private javax.swing.JLabel userNameCS1;
     private javax.swing.JLabel userNameDispatch;
-    private javax.swing.JLabel userNameHR;
+    private javax.swing.JLabel userNameStaffKantor;
     // End of variables declaration//GEN-END:variables
 }

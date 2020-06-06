@@ -15,15 +15,14 @@ import kmf_01.DBConnect;
  *
  * @author samod
  */
-public class PengambilanBarang extends javax.swing.JFrame {
+public class CetakTemporaryShipment extends javax.swing.JFrame {
     DBConnect connection = new DBConnect("KMF_01");
     DefaultTableModel model;
-    ArrayList<String> kc = new ArrayList<>();
     private String id_permintaan;
     /**
      * Creates new form Navbar
      */
-    public PengambilanBarang() {
+    public CetakTemporaryShipment() {
         initComponents();
         
         model = new DefaultTableModel();
@@ -31,7 +30,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
         tblPermintaanPickup.setModel(model);
         addColumn();
         loadData();
-        tampilKantorCabang();
+        tampilDriver();
     }
     
     public void addColumn() {  
@@ -54,12 +53,12 @@ public class PengambilanBarang extends javax.swing.JFrame {
         
         try {
             connection.stat = connection.conn.createStatement();
-            String query = "SELECT * FROM PermintaanPengiriman pe JOIN Pelanggan p ON pe.id_pelanggan=p.id_pelanggan WHERE status_pickup='Diminta'";
+            String query = "SELECT * FROM PermintaanPengiriman pe JOIN Pelanggan p ON pe.id_pelanggan=p.id_pelanggan WHERE status_pickup='Permintaan Pickup'";
             connection.result = connection.stat.executeQuery(query);
             
             while(connection.result.next()) {
                 Object[] obj = new Object[10];
-                obj[0] = connection.result.getString("id_permintaanpengiriman");
+                obj[0] = connection.result.getString("id_permintaanPickup");
                 obj[1] = connection.result.getString("nama_pelanggan");
                 obj[2] = connection.result.getString("kota_asal");
                 obj[3] = connection.result.getString("alamat_asal");
@@ -76,26 +75,26 @@ public class PengambilanBarang extends javax.swing.JFrame {
             connection.result.close();
             
         } catch(Exception e) {
-            System.out.println("Terjadi error saat load data permintaan pengiriman: " + e);
+            System.out.println("Terjadi error saat load data permintaan pickup: " + e);
         }
     }
     
-    private void tampilKantorCabang() {
+    private void tampilDriver() {
         try {
             
             DBConnect c = connection;
             c.stat = c.conn.createStatement();
-            String sql = "SELECT id_kantorcabang, nama_kantorcabang FROM KantorCabangKota";
+            String sql = "SELECT id_driver, nama_driver FROM Driver";
             c.result = c.stat.executeQuery(sql);
             
             while(c.result.next()) {
-                cmbKantorCabang.addItem(c.result.getString("nama_kantorcabang"));
-                kc.add(c.result.getString("id_kantorcabang"));
+                cmbDriver.addItem(c.result.getString("nama_driver"));
             }
+            
             c.stat.close();
             c.result.close();
         } catch(Exception e) {
-            System.out.println("Terjadi error saat load data kantor cabang "  + e);
+            System.out.println("Terjadi error saat load data driver "  + e);
         }
     }
     
@@ -135,7 +134,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        btnKirim = new javax.swing.JButton();
+        btnCetak = new javax.swing.JButton();
         btnBatal = new javax.swing.JButton();
         txtNamaPengirim = new javax.swing.JTextField();
         txtNamaPenerima = new javax.swing.JTextField();
@@ -149,7 +148,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
         txtBiayaPaket = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        cmbKantorCabang = new javax.swing.JComboBox<>();
+        cmbDriver = new javax.swing.JComboBox<>();
         jPanel5 = new javax.swing.JPanel();
         Data = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
@@ -172,7 +171,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
         PageTitle.setPreferredSize(new java.awt.Dimension(1136, 70));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("Pengambilan Barang");
+        jLabel1.setText("Cetak Temporary Shipment");
 
         javax.swing.GroupLayout PageTitleLayout = new javax.swing.GroupLayout(PageTitle);
         PageTitle.setLayout(PageTitleLayout);
@@ -181,7 +180,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
             .addGroup(PageTitleLayout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(jLabel1)
-                .addContainerGap(937, Short.MAX_VALUE))
+                .addContainerGap(865, Short.MAX_VALUE))
         );
         PageTitleLayout.setVerticalGroup(
             PageTitleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -202,7 +201,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
         Form.setPreferredSize(new java.awt.Dimension(400, 548));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
-        jLabel2.setText("Form Pengambilan Barang");
+        jLabel2.setText("Form Temporary Shipment");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Kota Asal");
@@ -219,13 +218,13 @@ public class PengambilanBarang extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel7.setText("Berat Paket");
 
-        btnKirim.setText("Kirim");
-        btnKirim.setMaximumSize(new java.awt.Dimension(100, 30));
-        btnKirim.setMinimumSize(new java.awt.Dimension(0, 30));
-        btnKirim.setPreferredSize(new java.awt.Dimension(100, 30));
-        btnKirim.addActionListener(new java.awt.event.ActionListener() {
+        btnCetak.setText("Cetak");
+        btnCetak.setMaximumSize(new java.awt.Dimension(100, 30));
+        btnCetak.setMinimumSize(new java.awt.Dimension(0, 30));
+        btnCetak.setPreferredSize(new java.awt.Dimension(100, 30));
+        btnCetak.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnKirimActionPerformed(evt);
+                btnCetakActionPerformed(evt);
             }
         });
 
@@ -233,6 +232,11 @@ public class PengambilanBarang extends javax.swing.JFrame {
         btnBatal.setMaximumSize(new java.awt.Dimension(73, 30));
         btnBatal.setMinimumSize(new java.awt.Dimension(0, 30));
         btnBatal.setPreferredSize(new java.awt.Dimension(100, 23));
+        btnBatal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBatalActionPerformed(evt);
+            }
+        });
 
         txtNamaPengirim.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         txtNamaPengirim.setEnabled(false);
@@ -268,7 +272,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
         jLabel12.setText("Biaya Paket");
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel13.setText("Kantor Cabang");
+        jLabel13.setText("Driver");
 
         javax.swing.GroupLayout FormLayout = new javax.swing.GroupLayout(Form);
         Form.setLayout(FormLayout);
@@ -294,7 +298,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
                             .addGroup(FormLayout.createSequentialGroup()
                                 .addComponent(btnBatal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(btnKirim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnCetak, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(txtNamaPengirim)
                             .addComponent(txtNamaPenerima)
                             .addComponent(txtKotaAsal)
@@ -303,7 +307,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
                             .addComponent(txtAlamatTujuan)
                             .addComponent(txtBeratPaket)
                             .addComponent(txtBiayaPaket)
-                            .addComponent(cmbKantorCabang, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(cmbDriver, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(34, Short.MAX_VALUE))
         );
         FormLayout.setVerticalGroup(
@@ -346,10 +350,10 @@ public class PengambilanBarang extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
-                    .addComponent(cmbKantorCabang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbDriver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(66, 66, 66)
                 .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnKirim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCetak, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnBatal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(57, Short.MAX_VALUE))
         );
@@ -490,23 +494,27 @@ public class PengambilanBarang extends javax.swing.JFrame {
         txtBiayaPaket.setText((String) model.getValueAt(i, 8));
     }//GEN-LAST:event_tblPermintaanPickupMouseClicked
 
-    private void btnKirimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKirimActionPerformed
+    private void btnCetakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCetakActionPerformed
         try {
             String query = "UPDATE PermintaanPengiriman SET status_pickup=? WHERE id_permintaanpengiriman=?";
             connection.pstat = connection.conn.prepareStatement(query);
-            connection.pstat.setString(1, "Permintaan Pickup");
+            connection.pstat.setString(1, "Paket Sedang Dijemput oleh " + cmbDriver.getSelectedItem());
             connection.pstat.setString(2, id_permintaan);
 
             connection.pstat.executeUpdate();
             connection.pstat.close();
 
         } catch(Exception e) {
-            System.out.println("Terjadi error pada saat pengambilan barang : " + e);
+            System.out.println("Terjadi error pada saat cetak temp. shipment : " + e);
         }
-        JOptionPane.showMessageDialog(this, "Pengambilan barang berhasil diproses");
+        JOptionPane.showMessageDialog(this, "Cetak Temporary Shipment berhasil");
         loadData();
         ClearForm();
-    }//GEN-LAST:event_btnKirimActionPerformed
+    }//GEN-LAST:event_btnCetakActionPerformed
+
+    private void btnBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalActionPerformed
+        ClearForm();
+    }//GEN-LAST:event_btnBatalActionPerformed
 
     /**
      * @param args the command line arguments
@@ -525,14 +533,18 @@ public class PengambilanBarang extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(PengambilanBarang.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CetakTemporaryShipment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PengambilanBarang.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CetakTemporaryShipment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(PengambilanBarang.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CetakTemporaryShipment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(PengambilanBarang.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(CetakTemporaryShipment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -541,7 +553,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PengambilanBarang().setVisible(true);
+                new CetakTemporaryShipment().setVisible(true);
             }
         });
     }
@@ -553,8 +565,8 @@ public class PengambilanBarang extends javax.swing.JFrame {
     private javax.swing.JPanel PageTitle;
     private javax.swing.JPanel PengambilanBarang;
     private javax.swing.JButton btnBatal;
-    private javax.swing.JButton btnKirim;
-    private javax.swing.JComboBox<String> cmbKantorCabang;
+    private javax.swing.JButton btnCetak;
+    private javax.swing.JComboBox<String> cmbDriver;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

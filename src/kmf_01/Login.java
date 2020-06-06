@@ -5,12 +5,15 @@
  */
 package kmf_01;
 
+import java.awt.event.KeyEvent;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author samod
  */
 public class Login extends javax.swing.JFrame {
-
+    DBConnect connection = new DBConnect("KMF_01");
     /**
      * Creates new form Test
      */
@@ -18,6 +21,39 @@ public class Login extends javax.swing.JFrame {
         initComponents();
         
         this.setResizable(false);
+    }
+    
+    private void LoginUser() {
+        try {
+            DBConnect c = connection;
+            c.stat = c.conn.createStatement();
+            String sql = "SELECT * FROM StaffKantor s JOIN Department d ON s.id_department = d.id_department"
+                    + " WHERE username='" + txtUsername.getText() + "' AND password='" + txtPassword.getText() + "'";
+            c.result = c.stat.executeQuery(sql);
+            String username = "", role = "";
+            int count = 0;
+            
+            while(c.result.next()) {
+                count++;
+                username = c.result.getString("nama_staff");
+                role = c.result.getString("nama_department");
+            }
+            
+            if(count > 0) {
+                JOptionPane.showMessageDialog(this, "Login berhasil", "Login berhasil", JOptionPane.INFORMATION_MESSAGE);
+                this.setVisible(false);
+                Template app = new Template();
+                app.setNavigation(username, role);
+                app.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Useraname atau password salah!", "Login gagal", JOptionPane.ERROR_MESSAGE);
+            }
+            
+            c.stat.close();
+            c.result.close();
+        } catch(Exception e) {
+            System.out.println("Terjadi error saat load data driver "  + e);
+        }
     }
 
     /**
@@ -42,8 +78,8 @@ public class Login extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         txtUsername = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        btnLogin = new javax.swing.JButton();
+        txtPassword = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
@@ -102,18 +138,24 @@ public class Login extends javax.swing.JFrame {
         txtUsername.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
         jPanel4.add(txtUsername, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 260, 200, 30));
 
-        jButton1.setBackground(new java.awt.Color(36, 136, 255));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("LOGIN");
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnLogin.setBackground(new java.awt.Color(36, 136, 255));
+        btnLogin.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnLogin.setForeground(new java.awt.Color(255, 255, 255));
+        btnLogin.setText("LOGIN");
+        btnLogin.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnLoginActionPerformed(evt);
             }
         });
-        jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 380, 150, 40));
-        jPanel4.add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 310, 200, 30));
+        jPanel4.add(btnLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 380, 150, 40));
+
+        txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPasswordKeyPressed(evt);
+            }
+        });
+        jPanel4.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 310, 200, 30));
 
         jPanel1.add(jPanel4);
 
@@ -125,11 +167,16 @@ public class Login extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        this.setVisible(false);
-        Template app = new Template();
-        app.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        LoginUser();
+        
+    }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void txtPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyPressed
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            LoginUser();
+        }
+    }//GEN-LAST:event_txtPasswordKeyPressed
 
     /**
      * @param args the command line arguments
@@ -168,7 +215,7 @@ public class Login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnLogin;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -181,7 +228,7 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 }

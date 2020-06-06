@@ -32,4 +32,5 @@ public class DBConnect {
             System.out.println("Error saat connect database: " + e);
         }
     }
+    
 }
