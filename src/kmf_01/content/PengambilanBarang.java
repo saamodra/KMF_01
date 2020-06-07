@@ -154,8 +154,6 @@ public class PengambilanBarang extends javax.swing.JFrame {
         Data = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -379,15 +377,6 @@ public class PengambilanBarang extends javax.swing.JFrame {
         jPanel7.setMaximumSize(new java.awt.Dimension(32767, 60));
         jPanel7.setPreferredSize(new java.awt.Dimension(686, 60));
 
-        jButton2.setText("Cari");
-        jButton2.setToolTipText("");
-        jButton2.setMaximumSize(new java.awt.Dimension(100, 29));
-        jButton2.setMinimumSize(new java.awt.Dimension(0, 30));
-        jButton2.setPreferredSize(new java.awt.Dimension(70, 23));
-
-        jTextField1.setMaximumSize(new java.awt.Dimension(120, 30));
-        jTextField1.setPreferredSize(new java.awt.Dimension(160, 20));
-
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         jLabel8.setText("Data Permintaan Pickup");
 
@@ -397,22 +386,13 @@ public class PengambilanBarang extends javax.swing.JFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 247, Short.MAX_VALUE)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(477, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addComponent(jLabel8)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(19, Short.MAX_VALUE)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(11, 11, 11))
+                .addGap(0, 33, Short.MAX_VALUE))
         );
 
         jPanel4.add(jPanel7);
@@ -555,7 +535,6 @@ public class PengambilanBarang extends javax.swing.JFrame {
     private javax.swing.JButton btnBatal;
     private javax.swing.JButton btnKirim;
     private javax.swing.JComboBox<String> cmbKantorCabang;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -573,7 +552,6 @@ public class PengambilanBarang extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTable tblPermintaanPickup;
     private javax.swing.JTextField txtAlamatAsal;
     private javax.swing.JTextField txtAlamatTujuan;

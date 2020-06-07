@@ -67,6 +67,8 @@ public class Template extends javax.swing.JFrame {
         NavBar.add("Customer Service", CS_Dept);
         NavBar.add("Dispatch", Dispatch_Dept);
         NavBar.add("Staff Kantor Cabang", StaffKantor);
+        NavBar.add("National Transport", National_Transport_Dept);
+        
         
         contentLayout = (CardLayout) Content.getLayout();   // Membuat content layout, agar tampilan konten bisa diganti-ganti
         navigationLayout = (CardLayout) NavBar.getLayout(); // Membuat navigation layout, agar tampilan navigasi setiap role bisa diganti-ganti
