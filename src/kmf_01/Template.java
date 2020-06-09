@@ -56,6 +56,7 @@ public class Template extends javax.swing.JFrame {
         CetakTemporaryShipment cetakTemporaryShipment = new CetakTemporaryShipment();
         PengambilanBarang pengambilanBarang = new PengambilanBarang();
         CetakConnote cetakConnote = new CetakConnote();
+        CargoManifest cargoManifest = new CargoManifest();
         
         Content.add("dashboard", dashboard.getPanel());
         Content.add("permintaanPickUp", permintaanPickup.getPanel());
@@ -63,6 +64,7 @@ public class Template extends javax.swing.JFrame {
         Content.add("cetakConnote", cetakConnote.getPanel());
         Content.add("tambahPaket", inputPaket.getPanel());
         Content.add("cetakTemporaryShipment", cetakTemporaryShipment.getPanel());
+        Content.add("cargoManifest", cargoManifest.getPanel());
         
         NavBar.add("Customer Service", CS_Dept);
         NavBar.add("Dispatch", Dispatch_Dept);
@@ -219,6 +221,22 @@ public class Template extends javax.swing.JFrame {
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 cetakConnote.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
+        cargoManifestMenu.addMouseListener(new MouseAdapter()  
+        {  
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "cargoManifest");
+            }  
+            
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cargoManifestMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                cargoManifestMenu.setBackground(new Color(51,51,51));
             }
         }); 
     }

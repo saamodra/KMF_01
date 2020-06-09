@@ -30,7 +30,7 @@ public class CargoManifest extends javax.swing.JFrame {
          
         tblPermintaanPickup.setModel(model);
         addColumn();
-        loadData();
+//        loadData();
         tampilKantorCabang();
     }
     
@@ -47,38 +47,38 @@ public class CargoManifest extends javax.swing.JFrame {
         model.addColumn("Tgl. Permintaan");
     }
     
-    public void loadData() {
-        model.getDataVector().removeAllElements();
-        
-        model.fireTableDataChanged();
-        
-        try {
-            connection.stat = connection.conn.createStatement();
-            String query = "SELECT * FROM PermintaanPengiriman pe JOIN Pelanggan p ON pe.id_pelanggan=p.id_pelanggan WHERE status_pickup='Diminta'";
-            connection.result = connection.stat.executeQuery(query);
-            
-            while(connection.result.next()) {
-                Object[] obj = new Object[10];
-                obj[0] = connection.result.getString("id_permintaanpengiriman");
-                obj[1] = connection.result.getString("nama_pelanggan");
-                obj[2] = connection.result.getString("kota_asal");
-                obj[3] = connection.result.getString("alamat_asal");
-                obj[4] = connection.result.getString("nama_penerima");
-                obj[5] = connection.result.getString("kota_tujuan");
-                obj[6] = connection.result.getString("alamat_tujuan");
-                obj[7] = connection.result.getString("berat_paket");
-                obj[8] = connection.result.getString("biaya_kirim");
-                obj[9] = connection.result.getString("tgl_permintaan");
-                
-                model.addRow(obj);
-            }
-            connection.stat.close();
-            connection.result.close();
-            
-        } catch(Exception e) {
-            System.out.println("Terjadi error saat load data permintaan pengiriman: " + e);
-        }
-    }
+//    public void loadData() {
+//        model.getDataVector().removeAllElements();
+//        
+//        model.fireTableDataChanged();
+//        
+//        try {
+//            connection.stat = connection.conn.createStatement();
+//            String query = "SELECT * FROM Paket p JOIN PermintaanPengiriman pe ON pe.id_permintaanpengiriman=p.id_permintaanpengiriman WHERE status_paket='Paket Siap dikirim'";
+//            connection.result = connection.stat.executeQuery(query);
+//            
+//            while(connection.result.next()) {
+//                Object[] obj = new Object[10];
+//                obj[0] = connection.result.getString("id_permintaanpengiriman");
+//                obj[1] = connection.result.getString("nama_pelanggan");
+//                obj[2] = connection.result.getString("kota_asal");
+//                obj[3] = connection.result.getString("alamat_asal");
+//                obj[4] = connection.result.getString("nama_penerima");
+//                obj[5] = connection.result.getString("kota_tujuan");
+//                obj[6] = connection.result.getString("alamat_tujuan");
+//                obj[7] = connection.result.getString("berat_paket");
+//                obj[8] = connection.result.getString("biaya_kirim");
+//                obj[9] = connection.result.getString("tgl_permintaan");
+//                
+//                model.addRow(obj);
+//            }
+//            connection.stat.close();
+//            connection.result.close();
+//            
+//        } catch(Exception e) {
+//            System.out.println("Terjadi error saat load data permintaan pengiriman: " + e);
+//        }
+//    }
     
     private void tampilKantorCabang() {
         try {
