@@ -9,24 +9,13 @@ import kmf_01.content.PengambilanBarang;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 import kmf_01.content.*;
@@ -57,6 +46,11 @@ public class Template extends javax.swing.JFrame {
         PengambilanBarang pengambilanBarang = new PengambilanBarang();
         CetakConnote cetakConnote = new CetakConnote();
         CargoManifest cargoManifest = new CargoManifest();
+        PenerimaanCargo penerimaanCargo = new PenerimaanCargo();
+        PengirimanCargo pengirimanCargo = new PengirimanCargo();
+        PendataanBarangMasuk pendataanBarangMasuk = new PendataanBarangMasuk();
+        CetakSMU cetakSMU = new CetakSMU();
+        LihatPaket lihatPaket = new LihatPaket();
         
         Content.add("dashboard", dashboard.getPanel());
         Content.add("permintaanPickUp", permintaanPickup.getPanel());
@@ -65,6 +59,9 @@ public class Template extends javax.swing.JFrame {
         Content.add("tambahPaket", inputPaket.getPanel());
         Content.add("cetakTemporaryShipment", cetakTemporaryShipment.getPanel());
         Content.add("cargoManifest", cargoManifest.getPanel());
+        Content.add("penerimaanCargo", penerimaanCargo.getPanel());
+        Content.add("pendataanBarangMasuk", pendataanBarangMasuk.getPanel());
+        Content.add("lihatPaket", lihatPaket.getPanel());
         
         NavBar.add("Customer Service", CS_Dept);
         NavBar.add("Dispatch", Dispatch_Dept);
@@ -86,6 +83,8 @@ public class Template extends javax.swing.JFrame {
         RegisterDispatchMenu();
         
         RegisterStaffKantorMenu();
+        
+        RegisterNTDMenu();
         
         
         //Untuk toggle menu sidebar menjadi full lagi ketika user klik maximize
@@ -154,6 +153,22 @@ public class Template extends javax.swing.JFrame {
             }
         });
         
+        lihatPaketMenu.addMouseListener(new MouseAdapter()  
+        {  
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "lihatPaket");
+            }  
+            
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                lihatPaketMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                lihatPaketMenu.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
         
     }
     
@@ -173,6 +188,25 @@ public class Template extends javax.swing.JFrame {
                 pengambilanBarang.setBackground(new Color(51,51,51));
             }
         }); 
+    }
+    
+    private void RegisterNTDMenu() {
+        penerimaanCargoMenu.addMouseListener(new MouseAdapter()  
+        {  
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "penerimaanCargo");
+            }  
+            
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                penerimaanCargoMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                penerimaanCargoMenu.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
     }
     
     private void RegisterStaffKantorMenu() {
@@ -237,6 +271,38 @@ public class Template extends javax.swing.JFrame {
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 cargoManifestMenu.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
+        pendataanBarangMasukMenu.addMouseListener(new MouseAdapter()  
+        {  
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "pendataanBarangMasuk");
+            }  
+            
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                pendataanBarangMasukMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                pendataanBarangMasukMenu.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
+        lihatPaketSKMenu.addMouseListener(new MouseAdapter()  
+        {  
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "lihatPaket");
+            }  
+            
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                lihatPaketSKMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                lihatPaketSKMenu.setBackground(new Color(51,51,51));
             }
         }); 
     }
@@ -346,6 +412,7 @@ public class Template extends javax.swing.JFrame {
         imageProfileCS = new javax.swing.JLabel();
         userNameCS = new javax.swing.JLabel();
         roleCS = new javax.swing.JLabel();
+        lihatPaketMenu = new javax.swing.JLabel();
         Dispatch_Dept = new javax.swing.JPanel();
         userNameDispatch = new javax.swing.JLabel();
         roleDispatch = new javax.swing.JLabel();
@@ -363,6 +430,7 @@ public class Template extends javax.swing.JFrame {
         cargoManifestMenu = new javax.swing.JLabel();
         pendataanBarangMasukMenu = new javax.swing.JLabel();
         pengirimanBarangMenu = new javax.swing.JLabel();
+        lihatPaketSKMenu = new javax.swing.JLabel();
         National_Transport_Dept = new javax.swing.JPanel();
         homeMenuCS1 = new javax.swing.JLabel();
         cetakSMUMenu = new javax.swing.JLabel();
@@ -497,6 +565,17 @@ public class Template extends javax.swing.JFrame {
         roleCS.setForeground(new java.awt.Color(255, 255, 255));
         roleCS.setText("Customer Service");
 
+        lihatPaketMenu.setBackground(new java.awt.Color(51, 51, 51));
+        lihatPaketMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lihatPaketMenu.setForeground(new java.awt.Color(255, 255, 255));
+        lihatPaketMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        lihatPaketMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/package_24px.png"))); // NOI18N
+        lihatPaketMenu.setText("Lihat Daftar Paket");
+        lihatPaketMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        lihatPaketMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lihatPaketMenu.setIconTextGap(25);
+        lihatPaketMenu.setOpaque(true);
+
         javax.swing.GroupLayout CS_DeptLayout = new javax.swing.GroupLayout(CS_Dept);
         CS_Dept.setLayout(CS_DeptLayout);
         CS_DeptLayout.setHorizontalGroup(
@@ -511,6 +590,7 @@ public class Template extends javax.swing.JFrame {
                     .addComponent(userNameCS)
                     .addComponent(roleCS))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(lihatPaketMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         CS_DeptLayout.setVerticalGroup(
             CS_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -526,7 +606,9 @@ public class Template extends javax.swing.JFrame {
                 .addComponent(homeMenuCS, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(permintaanPickupMenuCS, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(477, Short.MAX_VALUE))
+                .addGap(0, 0, 0)
+                .addComponent(lihatPaketMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(432, Short.MAX_VALUE))
         );
 
         NavBar.add(CS_Dept, "card2");
@@ -692,6 +774,17 @@ public class Template extends javax.swing.JFrame {
         pengirimanBarangMenu.setIconTextGap(25);
         pengirimanBarangMenu.setOpaque(true);
 
+        lihatPaketSKMenu.setBackground(new java.awt.Color(51, 51, 51));
+        lihatPaketSKMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lihatPaketSKMenu.setForeground(new java.awt.Color(255, 255, 255));
+        lihatPaketSKMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        lihatPaketSKMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/package_24px.png"))); // NOI18N
+        lihatPaketSKMenu.setText("Lihat Daftar Paket");
+        lihatPaketSKMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        lihatPaketSKMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lihatPaketSKMenu.setIconTextGap(25);
+        lihatPaketSKMenu.setOpaque(true);
+
         javax.swing.GroupLayout StaffKantorLayout = new javax.swing.GroupLayout(StaffKantor);
         StaffKantor.setLayout(StaffKantorLayout);
         StaffKantorLayout.setHorizontalGroup(
@@ -711,6 +804,7 @@ public class Template extends javax.swing.JFrame {
             .addComponent(cargoManifestMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(pendataanBarangMasukMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(pengirimanBarangMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(lihatPaketSKMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         StaffKantorLayout.setVerticalGroup(
             StaffKantorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -736,6 +830,8 @@ public class Template extends javax.swing.JFrame {
                 .addComponent(pendataanBarangMasukMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(pengirimanBarangMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(lihatPaketSKMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -915,6 +1011,8 @@ public class Template extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JLabel lihatPaketMenu;
+    private javax.swing.JLabel lihatPaketSKMenu;
     private javax.swing.JLabel pendataanBarangMasukMenu;
     private javax.swing.JLabel penerimaanCargoMenu;
     private javax.swing.JLabel pengambilanBarang;

@@ -18,7 +18,6 @@ import kmf_01.DBConnect;
 public class CetakConnote extends javax.swing.JFrame {
     DBConnect connection = new DBConnect("KMF_01");
     DefaultTableModel model;
-    ArrayList<String> kc = new ArrayList<>();
     private String id_permintaan;
     /**
      * Creates new form Navbar
@@ -117,6 +116,12 @@ public class CetakConnote extends javax.swing.JFrame {
 
         jLabel22.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel22.setText("ID Connote");
+
+        txtIdCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtIdCariActionPerformed(evt);
+            }
+        });
 
         btnCari.setText("Cari");
         btnCari.addActionListener(new java.awt.event.ActionListener() {
@@ -623,6 +628,10 @@ public class CetakConnote extends javax.swing.JFrame {
         txtAlamatAsal.setText("");
         txtTlpPengirim.setText("");
     }//GEN-LAST:event_btnBatalActionPerformed
+
+    private void txtIdCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdCariActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtIdCariActionPerformed
 
     /**
      * @param args the command line arguments

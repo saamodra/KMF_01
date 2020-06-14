@@ -5,6 +5,8 @@
  */
 package kmf_01;
 
+import javax.swing.UIManager;
+
 /**
  *
  * @author samod
@@ -15,8 +17,11 @@ public class KMF_01 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        try { 
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); 
+        } catch(Exception ignored){}
+
         Login login = new Login();
         login.setVisible(true);
     }
-    
 }
