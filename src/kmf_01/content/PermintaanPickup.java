@@ -5,36 +5,41 @@
  */
 package kmf_01.content;
 
+import java.awt.FlowLayout;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import kmf_01.DBConnect;
+import kmf_01.KMFSession;
 
-/**
- *
- * @author samod
- */
 public class PermintaanPickup extends javax.swing.JFrame {
     DBConnect connection = new DBConnect("KMF_01");
     ArrayList<String> id_kota = new ArrayList<>();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy"); 
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    boolean foundPelanggan = false;
+    String idpelanggan;
     /**
      * Creates new form PermintaanPickup
      */
     public PermintaanPickup() {
         initComponents();
         
+        FormLoad();
+    }
+    
+    private void FormLoad() {
+        
         AutoNumber();
         listKota();
         txtTglPermintaan.setText(dateFormat.format(new java.util.Date()));
-        
     }
+        
     
     public JPanel getPanel() {
-        return jPanel10;
+        return PermintaanPickup;
     }
     
     private void listKota() {
@@ -52,13 +57,13 @@ public class PermintaanPickup extends javax.swing.JFrame {
             }
             c.stat.close();
             c.result.close();
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error saat load data list kota "  + e);
         }
     }
     
     
-    public void AutoNumber() {
+    private void AutoNumber() {
         try {
             String id = "";
             int idBuku, countRow = 0;
@@ -117,6 +122,33 @@ public class PermintaanPickup extends javax.swing.JFrame {
          return id;
     }
     
+    private boolean pelangganIsUnique(String nama, String hp) {
+        boolean result = false;
+        try {
+            
+            DBConnect c = connection;
+            c.stat = c.conn.createStatement();
+            String sql = "SELECT * FROM Pelanggan WHERE nama_pelanggan = '" + nama + "' AND nohp_pelanggan = '" + hp + "'";
+            c.result = c.stat.executeQuery(sql);
+            int countRow = 0;
+            
+            while(c.result.next()) {
+                countRow++;
+            }
+            
+            if(countRow == 0) {
+                result = true;
+            } 
+            
+            c.stat.close();
+            c.result.close();
+        } catch(SQLException e) {
+            System.out.println("Terjadi error saat load data Destinasi "  + e);
+        }
+        
+        return result;
+    }
+    
     private double getDestinationPrice(String k1, String k2, String jenis) {
         double price=0;
         
@@ -142,22 +174,40 @@ public class PermintaanPickup extends javax.swing.JFrame {
     }
     
     private boolean validateAll() {
-        if(txtNamaPelanggan.getText().equals("") || txtNamaPenerima.getText().equals("") || txtNoTelpPelanggan.getText().equals("")
+        return !(txtNamaPelanggan.getText().equals("") || txtNamaPenerima.getText().equals("") || txtNoTelpPelanggan.getText().equals("")
                 || txtNoTelpPenerima.getText().equals("") || txtAlamatAsal.getText().equals("") || txtAlamatTujuan.getText().equals("")
-                || txtBerat.getValue().toString().equals("0")) {
-            return false;
-        } else {
-            return true;
-        }
+                || txtBerat.getValue().toString().equals("0"));
         
     }
     
-    public void calculateTotalPrice() {
+    private void calculateTotalPrice() {
         double totalPrice =  getDestinationPrice(id_kota.get(cmbAsal.getSelectedIndex()), id_kota.get(cmbTujuan.getSelectedIndex()), (String)cmbJenisPengiriman.getSelectedItem());
         double berat = Double.parseDouble(txtBerat.getValue().toString());
 
         txtBiaya.setText(String.valueOf(berat * totalPrice)); 
     }
+    
+    private void ClearForm() {
+        FormLoad();
+        newPengirim();
+        cmbAsal.setSelectedIndex(0);
+        cmbTujuan.setSelectedIndex(0);
+        cmbJenisPengiriman.setSelectedIndex(0);
+        txtNamaPenerima.setText("");
+        txtAlamatAsal.setText("");
+        txtAlamatTujuan.setText("");
+        txtNoTelpPenerima.setText("");
+        txtBerat.setValue(0);
+        txtBiaya.setText("");
+    }
+    
+    private void newPengirim() {
+        txtNamaPelanggan.setEnabled(true);
+        txtNoTelpPelanggan.setEnabled(true);
+        txtNamaPelanggan.setText("");
+        txtNoTelpPelanggan.setText("");
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -167,7 +217,7 @@ public class PermintaanPickup extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel10 = new javax.swing.JPanel();
+        PermintaanPickup = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -187,6 +237,8 @@ public class PermintaanPickup extends javax.swing.JFrame {
         txtAlamatAsal = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
         txtNoTelpPelanggan = new javax.swing.JTextField();
+        btnCari = new javax.swing.JButton();
+        btnBaru = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         txtNamaPenerima = new javax.swing.JTextField();
@@ -213,9 +265,14 @@ public class PermintaanPickup extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
 
-        jPanel10.setBackground(new java.awt.Color(225, 228, 230));
-        jPanel10.setBorder(javax.swing.BorderFactory.createEmptyBorder(50, 50, 50, 50));
-        jPanel10.setLayout(new javax.swing.BoxLayout(jPanel10, javax.swing.BoxLayout.LINE_AXIS));
+        PermintaanPickup.setBackground(new java.awt.Color(225, 228, 230));
+        PermintaanPickup.setBorder(javax.swing.BorderFactory.createEmptyBorder(50, 50, 50, 50));
+        PermintaanPickup.addHierarchyListener(new java.awt.event.HierarchyListener() {
+            public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
+                PermintaanPickupHierarchyChanged(evt);
+            }
+        });
+        PermintaanPickup.setLayout(new javax.swing.BoxLayout(PermintaanPickup, javax.swing.BoxLayout.LINE_AXIS));
 
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.Y_AXIS));
 
@@ -327,6 +384,20 @@ public class PermintaanPickup extends javax.swing.JFrame {
 
         txtNoTelpPelanggan.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
 
+        btnCari.setText("Cari");
+        btnCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariActionPerformed(evt);
+            }
+        });
+
+        btnBaru.setText("Baru");
+        btnBaru.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBaruActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -340,19 +411,28 @@ public class PermintaanPickup extends javax.swing.JFrame {
                     .addComponent(jLabel13))
                 .addGap(42, 42, 42)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cmbAsal, 0, 244, Short.MAX_VALUE)
-                    .addComponent(txtNamaPelanggan)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(txtNamaPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCari, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(cmbAsal, 0, 233, Short.MAX_VALUE)
                     .addComponent(txtAlamatAsal)
                     .addComponent(txtNoTelpPelanggan))
-                .addContainerGap(78, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnBaru, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtNamaPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtNamaPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel3))
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnCari, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnBaru)))
                 .addGap(12, 12, 12)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(txtNoTelpPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -367,6 +447,8 @@ public class PermintaanPickup extends javax.swing.JFrame {
                     .addComponent(jLabel5))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jPanel4Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnBaru, btnCari, txtNamaPelanggan});
 
         jPanel6.add(jPanel4);
 
@@ -564,9 +646,9 @@ public class PermintaanPickup extends javax.swing.JFrame {
 
         jPanel1.add(jPanel2);
 
-        jPanel10.add(jPanel1);
+        PermintaanPickup.add(jPanel1);
 
-        getContentPane().add(jPanel10);
+        getContentPane().add(PermintaanPickup);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -588,7 +670,7 @@ public class PermintaanPickup extends javax.swing.JFrame {
     }//GEN-LAST:event_cmbAsalActionPerformed
 
     private void cmbTujuanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbTujuanActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_cmbTujuanActionPerformed
 
     private void btnCekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCekActionPerformed
@@ -600,15 +682,19 @@ public class PermintaanPickup extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Mohon isi data dengan lengkap", "Gagal", JOptionPane.ERROR_MESSAGE);
         } else {
             try {
-                String idPelanggan = IdPelanggan();
-                String query = "INSERT INTO Pelanggan VALUES (?,?,?,?)";
-                connection.pstat = connection.conn.prepareStatement(query);
-                connection.pstat.setString(1, idPelanggan);
-                connection.pstat.setString(2, txtNamaPelanggan.getText());
-                connection.pstat.setString(3, txtAlamatAsal.getText());
-                connection.pstat.setString(4, txtNoTelpPelanggan.getText());
-                connection.pstat.executeUpdate();
-                connection.pstat.close();
+                String query;
+                
+                if(pelangganIsUnique(txtNamaPelanggan.getText(), txtNoTelpPelanggan.getText())) {
+                    idpelanggan = IdPelanggan();
+                    query = "INSERT INTO Pelanggan VALUES (?,?,?,?)";
+                    connection.pstat = connection.conn.prepareStatement(query);
+                    connection.pstat.setString(1, idpelanggan);
+                    connection.pstat.setString(2, txtNamaPelanggan.getText());
+                    connection.pstat.setString(3, txtAlamatAsal.getText());
+                    connection.pstat.setString(4, txtNoTelpPelanggan.getText());
+                    connection.pstat.executeUpdate();
+                    connection.pstat.close();
+                }
                 
                 query = "INSERT INTO PermintaanPengiriman (id_permintaanpengiriman, kota_asal, alamat_asal, "
                         + "telepon_penerima, nama_penerima, kota_tujuan, jenis_pengiriman, alamat_tujuan, berat_paket, biaya_kirim,"
@@ -624,19 +710,46 @@ public class PermintaanPickup extends javax.swing.JFrame {
                 connection.pstat.setString(8, txtAlamatTujuan.getText());
                 connection.pstat.setString(9, txtBerat.getValue().toString());
                 connection.pstat.setString(10, txtBiaya.getText());
-                connection.pstat.setString(11, idPelanggan);
-                connection.pstat.setString(12, "SK001");
+                connection.pstat.setString(11, idpelanggan);
+                connection.pstat.setString(12, KMFSession.getId_user());
                 
                 
                 connection.pstat.executeUpdate();
                 connection.pstat.close();
 
-            } catch(Exception e) {
+            } catch(SQLException e) {
                 System.out.println("Terjadi error pada saat tambah permintaan pickup : " + e);
             }
+            ClearForm();
             JOptionPane.showMessageDialog(this, "Tambah Permintaan Pickup berhasil");
-            }
+        }
     }//GEN-LAST:event_btnRequestActionPerformed
+
+    private void PermintaanPickupHierarchyChanged(java.awt.event.HierarchyEvent evt) {//GEN-FIRST:event_PermintaanPickupHierarchyChanged
+        ClearForm();
+    }//GEN-LAST:event_PermintaanPickupHierarchyChanged
+
+    private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
+        JDialog d = new JDialog(this , "Data Pelanggan", true);  
+        d.setLayout( new FlowLayout() );  
+        LihatPelanggan lPelanggan = new LihatPelanggan(d);
+        d.add(lPelanggan.getPanel());
+        d.setResizable(false);
+        d.setSize(600,370);
+        d.setLocationRelativeTo(this);
+        d.setVisible(true);
+        
+        idpelanggan = lPelanggan.getPelanggan()[0];
+        txtNamaPelanggan.setText(lPelanggan.getPelanggan()[1]);
+        txtNoTelpPelanggan.setText(lPelanggan.getPelanggan()[2]);
+        txtNamaPelanggan.setEnabled(false);
+        txtNoTelpPelanggan.setEnabled(false);
+    }//GEN-LAST:event_btnCariActionPerformed
+
+    private void btnBaruActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBaruActionPerformed
+        
+        newPengirim();
+    }//GEN-LAST:event_btnBaruActionPerformed
 
     /**
      * @param args the command line arguments
@@ -664,7 +777,7 @@ public class PermintaanPickup extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(PermintaanPickup.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -674,6 +787,9 @@ public class PermintaanPickup extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel PermintaanPickup;
+    private javax.swing.JButton btnBaru;
+    private javax.swing.JButton btnCari;
     private javax.swing.JButton btnCek;
     private javax.swing.JButton btnRequest;
     private javax.swing.JComboBox<String> cmbAsal;
@@ -696,7 +812,6 @@ public class PermintaanPickup extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

@@ -5,26 +5,30 @@
  */
 package kmf_01.content;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import kmf_01.DBConnect;
+import kmf_01.KMFSession;
 
-/**
- *
- * @author samod
- */
+
 public class CetakTemporaryShipment extends javax.swing.JFrame {
     DBConnect connection = new DBConnect("KMF_01");
     DefaultTableModel model;
     private String id_permintaan;
+    
     /**
      * Creates new form Navbar
      */
     public CetakTemporaryShipment() {
         initComponents();
         
+        FormLoad();
+    }
+    
+    private void FormLoad() {
         model = new DefaultTableModel();
          
         tblPermintaanPickup.setModel(model);
@@ -33,7 +37,7 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
         tampilDriver();
     }
     
-    public void addColumn() {  
+    private void addColumn() {  
         model.addColumn("ID");
         model.addColumn("Nama Pengirim");
         model.addColumn("Kota Asal");
@@ -46,19 +50,20 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
         model.addColumn("Tgl. Permintaan");
     }
     
-    public void loadData() {
+    private void loadData() {
         model.getDataVector().removeAllElements();
         
         model.fireTableDataChanged();
         
         try {
             connection.stat = connection.conn.createStatement();
-            String query = "SELECT * FROM PermintaanPengiriman pe JOIN Pelanggan p ON pe.id_pelanggan=p.id_pelanggan WHERE status_pickup='Permintaan Pickup'";
+            String query = "SELECT * FROM PermintaanPengiriman pe JOIN Pelanggan p ON pe.id_pelanggan=p.id_pelanggan "
+                    + "WHERE kota_asal='" + KMFSession.getKota() + "' AND status_pickup='Permintaan Pickup'";
             connection.result = connection.stat.executeQuery(query);
             
             while(connection.result.next()) {
                 Object[] obj = new Object[10];
-                obj[0] = connection.result.getString("id_permintaanPickup");
+                obj[0] = connection.result.getString("id_permintaanpengiriman");
                 obj[1] = connection.result.getString("nama_pelanggan");
                 obj[2] = connection.result.getString("kota_asal");
                 obj[3] = connection.result.getString("alamat_asal");
@@ -74,17 +79,18 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
             connection.stat.close();
             connection.result.close();
             
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error saat load data permintaan pickup: " + e);
         }
     }
     
     private void tampilDriver() {
         try {
-            
+            cmbDriver.removeAllItems();
             DBConnect c = connection;
             c.stat = c.conn.createStatement();
-            String sql = "SELECT id_driver, nama_driver FROM Driver";
+            String sql = "SELECT * FROM Driver WHERE "
+                    + "kota='" + KMFSession.getKota() + "'";
             c.result = c.stat.executeQuery(sql);
             
             while(c.result.next()) {
@@ -93,13 +99,13 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
             
             c.stat.close();
             c.result.close();
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error saat load data driver "  + e);
         }
     }
     
     public JPanel getPanel() {
-        return PengambilanBarang;
+        return CetakTemporaryShipment;
     }
     
     public void ClearForm() {
@@ -123,10 +129,11 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        PengambilanBarang = new javax.swing.JPanel();
+        CetakTemporaryShipment = new javax.swing.JPanel();
         PageTitle = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         Content = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
         Form = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -160,9 +167,14 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        PengambilanBarang.setBackground(new java.awt.Color(225, 228, 230));
-        PengambilanBarang.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
-        PengambilanBarang.setLayout(new javax.swing.BoxLayout(PengambilanBarang, javax.swing.BoxLayout.Y_AXIS));
+        CetakTemporaryShipment.setBackground(new java.awt.Color(225, 228, 230));
+        CetakTemporaryShipment.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
+        CetakTemporaryShipment.addHierarchyListener(new java.awt.event.HierarchyListener() {
+            public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
+                CetakTemporaryShipmentHierarchyChanged(evt);
+            }
+        });
+        CetakTemporaryShipment.setLayout(new javax.swing.BoxLayout(CetakTemporaryShipment, javax.swing.BoxLayout.Y_AXIS));
 
         PageTitle.setBackground(new java.awt.Color(225, 228, 230));
         PageTitle.setMaximumSize(new java.awt.Dimension(32767, 70));
@@ -188,14 +200,17 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
-        PengambilanBarang.add(PageTitle);
+        CetakTemporaryShipment.add(PageTitle);
 
         Content.setBackground(new java.awt.Color(225, 228, 230));
         Content.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
         Content.setPreferredSize(new java.awt.Dimension(1136, 400));
         Content.setLayout(new javax.swing.BoxLayout(Content, javax.swing.BoxLayout.LINE_AXIS));
 
-        Form.setMaximumSize(new java.awt.Dimension(40, 32767));
+        jScrollPane1.setMaximumSize(new java.awt.Dimension(450, 32767));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(450, 100));
+
+        Form.setMaximumSize(new java.awt.Dimension(400, 32767));
         Form.setPreferredSize(new java.awt.Dimension(400, 548));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
@@ -306,7 +321,7 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
                             .addComponent(txtBeratPaket)
                             .addComponent(txtBiayaPaket)
                             .addComponent(cmbDriver, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addGap(34, 34, 34))
         );
         FormLayout.setVerticalGroup(
             FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -349,14 +364,16 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
                 .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(cmbDriver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(66, 66, 66)
+                .addGap(31, 31, 31)
                 .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCetak, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnBatal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(57, Short.MAX_VALUE))
+                .addContainerGap(90, Short.MAX_VALUE))
         );
 
-        Content.add(Form);
+        jScrollPane1.setViewportView(Form);
+
+        Content.add(jScrollPane1);
 
         jPanel5.setMaximumSize(new java.awt.Dimension(10, 32767));
         jPanel5.setOpaque(false);
@@ -366,7 +383,7 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 10, Short.MAX_VALUE)
+            .addGap(0, 9, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -390,7 +407,7 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addComponent(jLabel8)
-                .addContainerGap(477, Short.MAX_VALUE))
+                .addContainerGap(438, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -429,7 +446,7 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
         Data.setLayout(DataLayout);
         DataLayout.setHorizontalGroup(
             DataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 746, Short.MAX_VALUE)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 707, Short.MAX_VALUE)
         );
         DataLayout.setVerticalGroup(
             DataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -438,19 +455,19 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
 
         Content.add(Data);
 
-        PengambilanBarang.add(Content);
+        CetakTemporaryShipment.add(Content);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(PengambilanBarang, javax.swing.GroupLayout.DEFAULT_SIZE, 1236, Short.MAX_VALUE)
+            .addComponent(CetakTemporaryShipment, javax.swing.GroupLayout.DEFAULT_SIZE, 1236, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(PengambilanBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 703, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(CetakTemporaryShipment, javax.swing.GroupLayout.PREFERRED_SIZE, 703, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -484,7 +501,7 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
             connection.pstat.executeUpdate();
             connection.pstat.close();
 
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error pada saat cetak temp. shipment : " + e);
         }
         JOptionPane.showMessageDialog(this, "Cetak Temporary Shipment berhasil");
@@ -495,6 +512,10 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
     private void btnBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalActionPerformed
         ClearForm();
     }//GEN-LAST:event_btnBatalActionPerformed
+
+    private void CetakTemporaryShipmentHierarchyChanged(java.awt.event.HierarchyEvent evt) {//GEN-FIRST:event_CetakTemporaryShipmentHierarchyChanged
+        FormLoad();
+    }//GEN-LAST:event_CetakTemporaryShipmentHierarchyChanged
 
     /**
      * @param args the command line arguments
@@ -539,11 +560,11 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel CetakTemporaryShipment;
     private javax.swing.JPanel Content;
     private javax.swing.JPanel Data;
     private javax.swing.JPanel Form;
     private javax.swing.JPanel PageTitle;
-    private javax.swing.JPanel PengambilanBarang;
     private javax.swing.JButton btnBatal;
     private javax.swing.JButton btnCetak;
     private javax.swing.JComboBox<String> cmbDriver;
@@ -563,6 +584,7 @@ public class CetakTemporaryShipment extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tblPermintaanPickup;
     private javax.swing.JTextField txtAlamatAsal;

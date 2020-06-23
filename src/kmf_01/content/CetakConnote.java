@@ -5,11 +5,32 @@
  */
 package kmf_01.content;
 
-import java.util.ArrayList;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.sql.SQLException;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import kmf_01.DBConnect;
+import kmf_01.KMF01Lib;
 
 /**
  *
@@ -17,23 +38,171 @@ import kmf_01.DBConnect;
  */
 public class CetakConnote extends javax.swing.JFrame {
     DBConnect connection = new DBConnect("KMF_01");
-    DefaultTableModel model;
-    private String id_permintaan;
+    
     /**
      * Creates new form Navbar
      */
     public CetakConnote() {
         initComponents();
-        
-        model = new DefaultTableModel();
-         
     }
     
     
     public JPanel getPanel() {
-        return PengambilanBarang;
+        return CetakConnote;
     }
     
+    private void addMetaData(Document document) {
+        document.addTitle("Connote - " + txtIdConnote.getText());
+        document.addSubject("Cetak Connote KMF 01");
+        document.addKeywords("Cetak Connote");
+        document.addAuthor("KMF 01");
+        document.addCreator("KMF 01");
+    }
+
+    private void addContent(Document document) throws DocumentException {
+        Paragraph paragraph = new Paragraph("PT. KMF", KMF01Lib.subFont);
+        Paragraph connote = new Paragraph("No. Resi : " + txtIdConnote.getText(), KMF01Lib.smallBold);
+        paragraph.setAlignment(Element.ALIGN_CENTER);
+        connote.setAlignment(Element.ALIGN_CENTER);
+        paragraph.add(connote);
+        
+        KMF01Lib.addEmptyLine(paragraph, 2);
+
+        // add a table
+        createTable(paragraph);
+
+        paragraph.add(new Paragraph("Tgl. Kirim : " + txtTanggal.getText()));
+        paragraph.add(new Paragraph("Deskripsi : " + txtJenisBarang.getText()));
+        paragraph.add(new Paragraph("Berat : " + txtBerat.getText() + " Kg"));
+        paragraph.add(new Paragraph("Jenis Pengiriman : " + txtJenisPengiriman.getText()));
+        paragraph.add(new Paragraph("Biaya Kirim : " + txtBiayaKirim.getText()));
+        
+        PdfPTable table = new PdfPTable(1);
+
+        table.setWidthPercentage(100);
+        PdfPCell c1 = new PdfPCell(new Paragraph(" "));
+        c1.setBorder(Rectangle.BOTTOM);
+        table.addCell(c1);
+        
+        paragraph.add(table);
+        
+        document.add(paragraph);
+    }
+
+    private void createTable(Paragraph para) throws BadElementException {
+        PdfPTable table = new PdfPTable(2);
+
+        PdfPCell c1 = new PdfPCell(new Paragraph(" "));
+        c1.setColspan(2);
+        c1.setBorder(Rectangle.TOP);
+        table.addCell(c1);
+        
+        table.setWidthPercentage(100);
+
+        c1 = new PdfPCell(new Phrase("Pengirim", KMF01Lib.smallBold));
+        c1.setHorizontalAlignment(Element.ALIGN_LEFT);
+        c1.setBorder(Rectangle.NO_BORDER);
+        table.addCell(c1);
+
+        c1 = new PdfPCell(new Phrase("Penerima", KMF01Lib.smallBold));
+        c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        c1.setBorder(Rectangle.NO_BORDER);
+        table.addCell(c1);
+        
+        table.setHeaderRows(1);
+        // Pengirim
+        c1 = new PdfPCell(new Phrase(txtNamaPengirim.getText()));
+        c1.setBorder(Rectangle.NO_BORDER);
+        table.addCell(c1);
+        
+        // Penerima
+        c1 = new PdfPCell(new Phrase(txtNamaPenerima.getText()));
+        c1.setBorder(Rectangle.NO_BORDER);
+        c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        table.addCell(c1);
+        
+        // Alamat Asal
+        c1 = new PdfPCell(new Phrase(txtAlamatAsal.getText()));
+        c1.setBorder(Rectangle.NO_BORDER);
+        table.addCell(c1);
+        
+        // Alamat Tujuan
+        c1 = new PdfPCell(new Phrase(txtAlamatTujuan.getText()));
+        c1.setBorder(Rectangle.NO_BORDER);
+        c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        table.addCell(c1);
+        
+        // Kota Asal
+        c1 = new PdfPCell(new Phrase(txtKotaAsal.getText()));
+        c1.setBorder(Rectangle.NO_BORDER);
+        table.addCell(c1);
+        
+        // Kota Tujuan
+        c1 = new PdfPCell(new Phrase(txtKotaTujuan.getText()));
+        c1.setBorder(Rectangle.NO_BORDER);
+        c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        table.addCell(c1);
+        
+        KMF01Lib.tableNewLine(table);
+        
+        // No Telp Pengirim
+        c1 = new PdfPCell(new Phrase(txtTlpPengirim.getText()));
+        c1.setBorder(Rectangle.NO_BORDER);
+        table.addCell(c1);
+        
+        // No Telp. Penerima
+        c1 = new PdfPCell(new Phrase(txtTlpPenerima.getText()));
+        c1.setBorder(Rectangle.NO_BORDER);
+        c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        table.addCell(c1);
+        
+        KMF01Lib.tableNewLine(table);
+        KMF01Lib.tableNewLine(table);
+        
+        c1 = new PdfPCell(new Paragraph(" "));
+        c1.setColspan(2);
+        c1.setBorder(Rectangle.TOP);
+        table.addCell(c1);
+        
+        para.add(table);
+    }
+
+    private void ClearForm() {
+        txtIdCari.setText("");
+        txtIdConnote.setText("");
+        txtIdPelanggan.setText("");
+        txtNamaPengirim.setText("");
+        txtKotaAsal.setText("");
+        txtTlpPengirim.setText("");
+        txtAlamatAsal.setText("");
+        txtNamaPenerima.setText("");
+        txtTlpPenerima.setText("");
+        txtKotaTujuan.setText("");
+        txtAlamatTujuan.setText("");
+        txtTanggal.setText("");
+        txtBerat.setText("");
+        txtBiayaKirim.setText("");
+        txtJenisBarang.setText("");
+        txtJenisPengiriman.setText("");
+    }
+    
+    private void SaveFile(File file) {
+        try {
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(file));
+            Rectangle page = new Rectangle(700,500);
+            document.setPageSize(page);
+            document.open();
+
+            addMetaData(document);
+            addContent(document);
+            document.close();
+                
+            JOptionPane.showMessageDialog(this, "Connote berhasil dicetak", "Berhasil",  JOptionPane.INFORMATION_MESSAGE);
+        } catch (DocumentException | FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -44,13 +213,14 @@ public class CetakConnote extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        PengambilanBarang = new javax.swing.JPanel();
+        CetakConnote = new javax.swing.JPanel();
         PageTitle = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
         txtIdCari = new javax.swing.JTextField();
         btnCari = new javax.swing.JButton();
         Content = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
         Data = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
@@ -78,7 +248,6 @@ public class CetakConnote extends javax.swing.JFrame {
         jLabel20 = new javax.swing.JLabel();
         txtJenisPengiriman = new javax.swing.JTextField();
         txtBiayaKirim = new javax.swing.JTextField();
-        jLabel19 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
@@ -98,14 +267,22 @@ public class CetakConnote extends javax.swing.JFrame {
         txtIdConnote = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
-        btnBatal = new javax.swing.JButton();
         btnCetak = new javax.swing.JButton();
+        btnBatal = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
 
-        PengambilanBarang.setBackground(new java.awt.Color(225, 228, 230));
-        PengambilanBarang.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
-        PengambilanBarang.setLayout(new javax.swing.BoxLayout(PengambilanBarang, javax.swing.BoxLayout.Y_AXIS));
+        CetakConnote.setBackground(new java.awt.Color(225, 228, 230));
+        CetakConnote.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
+        CetakConnote.setMinimumSize(new java.awt.Dimension(0, 0));
+        CetakConnote.setVerifyInputWhenFocusTarget(false);
+        CetakConnote.addHierarchyListener(new java.awt.event.HierarchyListener() {
+            public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
+                CetakConnoteHierarchyChanged(evt);
+            }
+        });
+        CetakConnote.setLayout(new javax.swing.BoxLayout(CetakConnote, javax.swing.BoxLayout.Y_AXIS));
 
         PageTitle.setBackground(new java.awt.Color(225, 228, 230));
         PageTitle.setMaximumSize(new java.awt.Dimension(32767, 70));
@@ -137,7 +314,7 @@ public class CetakConnote extends javax.swing.JFrame {
             .addGroup(PageTitleLayout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 663, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel22)
                 .addGap(18, 18, 18)
                 .addComponent(txtIdCari, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -162,14 +339,17 @@ public class CetakConnote extends javax.swing.JFrame {
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
-        PengambilanBarang.add(PageTitle);
+        CetakConnote.add(PageTitle);
 
         Content.setBackground(new java.awt.Color(225, 228, 230));
         Content.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
         Content.setPreferredSize(new java.awt.Dimension(1136, 400));
         Content.setLayout(new javax.swing.BoxLayout(Content, javax.swing.BoxLayout.LINE_AXIS));
 
+        Data.setLayout(new javax.swing.BoxLayout(Data, javax.swing.BoxLayout.LINE_AXIS));
+
         jPanel4.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        jPanel4.setPreferredSize(new java.awt.Dimension(100, 650));
         jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.Y_AXIS));
 
         jPanel7.setMaximumSize(new java.awt.Dimension(32767, 30));
@@ -184,7 +364,7 @@ public class CetakConnote extends javax.swing.JFrame {
 
         jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.Y_AXIS));
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel1.setPreferredSize(new java.awt.Dimension(1097, 500));
 
         jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -202,6 +382,18 @@ public class CetakConnote extends javax.swing.JFrame {
 
         jLabel13.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel13.setText("Alamat");
+
+        txtNamaPenerima.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtNamaPenerima.setEnabled(false);
+
+        txtTlpPenerima.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtTlpPenerima.setEnabled(false);
+
+        txtKotaTujuan.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtKotaTujuan.setEnabled(false);
+
+        txtAlamatTujuan.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtAlamatTujuan.setEnabled(false);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -256,8 +448,17 @@ public class CetakConnote extends javax.swing.JFrame {
         jLabel14.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel14.setText("Tanggal");
 
+        txtTanggal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtTanggal.setEnabled(false);
+
         jLabel17.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel17.setText("Jenis barang");
+
+        txtJenisBarang.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtJenisBarang.setEnabled(false);
+
+        txtBerat.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtBerat.setEnabled(false);
 
         jLabel15.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel15.setText("Berat ");
@@ -268,8 +469,11 @@ public class CetakConnote extends javax.swing.JFrame {
         jLabel20.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel20.setText("Jenis pengiriman");
 
-        jLabel19.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel19.setText("Rp.");
+        txtJenisPengiriman.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtJenisPengiriman.setEnabled(false);
+
+        txtBiayaKirim.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtBiayaKirim.setEnabled(false);
 
         jLabel16.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel16.setText("Biaya kirim");
@@ -287,6 +491,14 @@ public class CetakConnote extends javax.swing.JFrame {
                         .addContainerGap()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addComponent(jLabel14)
+                                .addGap(96, 96, 96)
+                                .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(103, 103, 103)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel20)
+                                    .addComponent(jLabel16)))
+                            .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel15)
                                     .addComponent(jLabel17))
@@ -296,26 +508,15 @@ public class CetakConnote extends javax.swing.JFrame {
                                         .addComponent(txtBerat, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(jLabel18))
-                                    .addComponent(txtJenisBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(jLabel14)
-                                .addGap(96, 96, 96)
-                                .addComponent(txtTanggal, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(103, 103, 103)
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel20)
-                                    .addComponent(jLabel16))
-                                .addGap(27, 27, 27)
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(jPanel5Layout.createSequentialGroup()
-                                        .addComponent(jLabel19)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtBiayaKirim, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txtJenisPengiriman)))))
+                                    .addComponent(txtJenisBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(27, 27, 27)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtJenisPengiriman, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtBiayaKirim, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
                         .addComponent(jLabel21)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(267, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -339,7 +540,6 @@ public class CetakConnote extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel17)
                         .addComponent(txtBiayaKirim, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel19)
                         .addComponent(jLabel16)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -380,6 +580,22 @@ public class CetakConnote extends javax.swing.JFrame {
         jLabel23.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel23.setText("Kota ");
 
+        txtIdPelanggan.setEditable(false);
+        txtIdPelanggan.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtIdPelanggan.setEnabled(false);
+
+        txtNamaPengirim.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtNamaPengirim.setEnabled(false);
+
+        txtTlpPengirim.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtTlpPengirim.setEnabled(false);
+
+        txtKotaAsal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtKotaAsal.setEnabled(false);
+
+        txtAlamatAsal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtAlamatAsal.setEnabled(false);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -387,26 +603,32 @@ public class CetakConnote extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel5))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGap(12, 12, 12)
+                                        .addComponent(jLabel3)))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtIdPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtNamaPengirim, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
                             .addComponent(jLabel6)
                             .addComponent(jLabel23)
-                            .addComponent(jLabel7)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
+                            .addComponent(jLabel7))
+                        .addGap(104, 104, 104)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(12, 12, 12)
-                                .addComponent(jLabel3)))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtIdPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNamaPengirim, javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(txtTlpPengirim, javax.swing.GroupLayout.Alignment.CENTER, javax.swing.GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
-                    .addComponent(txtKotaAsal, javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(txtAlamatAsal, javax.swing.GroupLayout.Alignment.CENTER))
+                            .addComponent(txtAlamatAsal)
+                            .addComponent(txtTlpPengirim)
+                            .addComponent(txtKotaAsal))))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -418,28 +640,27 @@ public class CetakConnote extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(txtIdPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(12, 12, 12)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtTlpPengirim, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtKotaAsal, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel23))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtAlamatAsal, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(txtNamaPengirim, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addGap(11, 11, 11)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtNamaPengirim, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(11, 11, 11)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtTlpPengirim, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addGap(11, 11, 11)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtKotaAsal, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel23))
+                .addGap(11, 11, 11)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtAlamatAsal, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
+                .addGap(18, 18, 18))
         );
+
+        txtIdConnote.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtIdConnote.setEnabled(false);
 
         jLabel24.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
         jLabel24.setText("ID Connote");
@@ -467,7 +688,18 @@ public class CetakConnote extends javax.swing.JFrame {
 
         jPanel10.setMinimumSize(new java.awt.Dimension(118, 45));
         jPanel10.setPreferredSize(new java.awt.Dimension(0, 45));
-        jPanel10.setLayout(new java.awt.GridBagLayout());
+        jPanel10.setLayout(new javax.swing.BoxLayout(jPanel10, javax.swing.BoxLayout.LINE_AXIS));
+
+        btnCetak.setText("Cetak");
+        btnCetak.setMaximumSize(new java.awt.Dimension(100, 35));
+        btnCetak.setMinimumSize(new java.awt.Dimension(100, 35));
+        btnCetak.setPreferredSize(new java.awt.Dimension(100, 35));
+        btnCetak.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCetakActionPerformed(evt);
+            }
+        });
+        jPanel10.add(btnCetak);
 
         btnBatal.setText("Batal");
         btnBatal.setMaximumSize(new java.awt.Dimension(100, 35));
@@ -478,13 +710,7 @@ public class CetakConnote extends javax.swing.JFrame {
                 btnBatalActionPerformed(evt);
             }
         });
-        jPanel10.add(btnBatal, new java.awt.GridBagConstraints());
-
-        btnCetak.setText("Cetak");
-        btnCetak.setMaximumSize(new java.awt.Dimension(100, 35));
-        btnCetak.setMinimumSize(new java.awt.Dimension(100, 35));
-        btnCetak.setPreferredSize(new java.awt.Dimension(100, 35));
-        jPanel10.add(btnCetak, new java.awt.GridBagConstraints());
+        jPanel10.add(btnBatal);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -493,15 +719,13 @@ public class CetakConnote extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 151, Short.MAX_VALUE)
+                                .addGap(0, 76, Short.MAX_VALUE)
                                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -512,17 +736,17 @@ public class CetakConnote extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(65, 65, 65)
+                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(42, 42, 42)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -531,107 +755,119 @@ public class CetakConnote extends javax.swing.JFrame {
 
         jPanel4.add(jPanel6);
 
-        javax.swing.GroupLayout DataLayout = new javax.swing.GroupLayout(Data);
-        Data.setLayout(DataLayout);
-        DataLayout.setHorizontalGroup(
-            DataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        DataLayout.setVerticalGroup(
-            DataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 780, Short.MAX_VALUE)
-        );
+        Data.add(jPanel4);
 
-        Content.add(Data);
+        jScrollPane2.setViewportView(Data);
 
-        PengambilanBarang.add(Content);
+        Content.add(jScrollPane2);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(PengambilanBarang, javax.swing.GroupLayout.DEFAULT_SIZE, 1236, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(PengambilanBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 703, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+        CetakConnote.add(Content);
+
+        getContentPane().add(CetakConnote);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
+        
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         try{
+            int count = 0;
             String sql = "SELECT connote, jenis_barang, tgl_masuk, id_permintaanpengiriman FROM Paket WHERE connote =?";
             connection.pstat = connection.conn.prepareStatement(sql);
             connection.pstat.setString(1, txtIdCari.getText());
             connection.result = connection.pstat.executeQuery();
             while(connection.result.next())
             {
+                count++;
                 txtIdConnote.setText(connection.result.getString("connote"));
                 txtJenisBarang.setText(connection.result.getString("jenis_barang"));
-                txtTanggal.setText(connection.result.getString("tgl_masuk"));
+                txtTanggal.setText(sdf.format(connection.result.getDate("tgl_masuk")));
             }
+            connection.stat.close();
+            connection.result.close();
+            
+            if(count > 0) {
+                String sql2 = "SELECT * FROM Paket p JOIN PermintaanPengiriman pp ON p.id_permintaanpengiriman=pp.id_permintaanpengiriman WHERE p.connote=?";
+                connection.pstat = connection.conn.prepareStatement(sql2);
+                connection.pstat.setString(1, txtIdCari.getText());
+                connection.result = connection.pstat.executeQuery();
+                while(connection.result.next())
+                {
+                    txtKotaAsal.setText(connection.result.getString("kota_asal"));
+                    txtAlamatAsal.setText(connection.result.getString("alamat_asal"));
+                    txtTlpPenerima.setText(connection.result.getString("telepon_penerima"));
+                    txtNamaPenerima.setText(connection.result.getString("nama_penerima"));
+                    txtKotaTujuan.setText(connection.result.getString("kota_tujuan"));
+                    txtAlamatTujuan.setText(connection.result.getString("alamat_tujuan"));
+                    txtJenisPengiriman.setText(connection.result.getString("jenis_pengiriman"));
+                    txtBerat.setText(connection.result.getString("berat_paket"));
+                    txtBiayaKirim.setText(formatter.format(connection.result.getDouble("biaya_kirim")));
+                    txtIdPelanggan.setText(connection.result.getString("id_pelanggan"));
+                }
+                connection.stat.close();
+                connection.result.close();
 
-            String sql2 = "SELECT * FROM PermintaanPengiriman pp JOIN Paket p ON p.id_permintaanpengiriman=pp.id_permintaanpengiriman WHERE p.connote=?";
-            connection.pstat = connection.conn.prepareStatement(sql2);
-            connection.pstat.setString(1, txtIdCari.getText());
-            connection.result = connection.pstat.executeQuery();
-            while(connection.result.next())
-            {
-                txtKotaAsal.setText(connection.result.getString("kota_asal"));
-                txtAlamatAsal.setText(connection.result.getString("alamat_asal"));
-                txtTlpPenerima.setText(connection.result.getString("telepon_penerima"));
-                txtNamaPenerima.setText(connection.result.getString("nama_penerima"));
-                txtKotaTujuan.setText(connection.result.getString("kota_tujuan"));
-                txtAlamatTujuan.setText(connection.result.getString("alamat_tujuan"));
-                txtJenisPengiriman.setText(connection.result.getString("jenis_pengiriman"));
-                txtBerat.setText(connection.result.getString("berat_paket"));
-                txtBiayaKirim.setText(connection.result.getString("biaya_kirim"));
-                txtIdPelanggan.setText(connection.result.getString("id_pelanggan"));
-            }
+                String sql3 = "SELECT * FROM Pelanggan p WHERE p.id_pelanggan=?";
+                connection.pstat = connection.conn.prepareStatement(sql3);
+                connection.pstat.setString(1, txtIdPelanggan.getText());
+                connection.result = connection.pstat.executeQuery();
+                while(connection.result.next())
+                {
+                    txtNamaPengirim.setText(connection.result.getString("nama_pelanggan"));
+                    txtTlpPengirim.setText(connection.result.getString("nohp_pelanggan"));
+                }
 
-            String sql3 = "SELECT * FROM Pelanggan p JOIN PermintaanPengiriman pp ON p.id_pelanggan=pp.id_pelanggan WHERE p.id_pelanggan=?";
-            connection.pstat = connection.conn.prepareStatement(sql3);
-            connection.pstat.setString(1, txtIdPelanggan.getText());
-            connection.result = connection.pstat.executeQuery();
-            while(connection.result.next())
-            {
-                txtNamaPengirim.setText(connection.result.getString("nama_pelanggan"));
-                txtAlamatAsal.setText(connection.result.getString("alamat_pelanggan"));
-                txtTlpPengirim.setText(connection.result.getString("nohp_pelanggan"));
+
+                connection.stat.close();
+                connection.result.close();
+                
+            } else {
+                JOptionPane.showMessageDialog(this, "Data paket tidak ditemukan", "Gagal",  JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e)
+        } catch (SQLException e)
         {
             System.out.println("Terjadi error saat load data connote: " + e);
         }
     }//GEN-LAST:event_btnCariActionPerformed
 
-    private void btnBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalActionPerformed
-        txtIdConnote.setText("");
-        txtJenisBarang.setText("");
-        txtTanggal.setText("");
-        txtKotaAsal.setText("");
-        txtAlamatAsal.setText("");
-        txtTlpPenerima.setText("");
-        txtNamaPenerima.setText("");
-        txtKotaTujuan.setText("");
-        txtAlamatTujuan.setText("");
-        txtJenisPengiriman.setText("");
-        txtBerat.setText("");
-        txtBiayaKirim.setText("");
-        txtIdPelanggan.setText("");
-        txtNamaPengirim.setText("");
-        txtAlamatAsal.setText("");
-        txtTlpPengirim.setText("");
-    }//GEN-LAST:event_btnBatalActionPerformed
-
     private void txtIdCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdCariActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIdCariActionPerformed
+
+    private void CetakConnoteHierarchyChanged(java.awt.event.HierarchyEvent evt) {//GEN-FIRST:event_CetakConnoteHierarchyChanged
+//        ClearForm();
+    }//GEN-LAST:event_CetakConnoteHierarchyChanged
+
+    private void btnCetakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCetakActionPerformed
+        try {
+            JFileChooser chooser = new JFileChooser();
+
+            FileFilter filter = new FileNameExtensionFilter("PDF File", "pdf");
+            chooser.setFileFilter(filter);
+            int returnVal1= chooser.showSaveDialog(this);
+            if (returnVal1 == JFileChooser.APPROVE_OPTION)
+            {
+                File file = chooser.getSelectedFile();
+                if(!file.getPath().toLowerCase().endsWith(".pdf"))
+                {
+                    file = new File(file + ".pdf");
+                }
+
+                SaveFile(file);
+                
+                ClearForm();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }//GEN-LAST:event_btnCetakActionPerformed
+
+    private void btnBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalActionPerformed
+        ClearForm();
+    }//GEN-LAST:event_btnBatalActionPerformed
 
     /**
      * @param args the command line arguments
@@ -644,7 +880,7 @@ public class CetakConnote extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -684,10 +920,10 @@ public class CetakConnote extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel CetakConnote;
     private javax.swing.JPanel Content;
     private javax.swing.JPanel Data;
     private javax.swing.JPanel PageTitle;
-    private javax.swing.JPanel PengambilanBarang;
     private javax.swing.JButton btnBatal;
     private javax.swing.JButton btnCari;
     private javax.swing.JButton btnCetak;
@@ -701,7 +937,6 @@ public class CetakConnote extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
@@ -724,6 +959,7 @@ public class CetakConnote extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField txtAlamatAsal;
     private javax.swing.JTextField txtAlamatTujuan;
     private javax.swing.JTextField txtBerat;

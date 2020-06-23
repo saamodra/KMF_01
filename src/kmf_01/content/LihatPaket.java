@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import kmf_01.DBConnect;
@@ -29,6 +28,10 @@ public class LihatPaket extends javax.swing.JFrame {
     public LihatPaket() {
         initComponents();
         
+        FormLoad();
+    }
+    
+    private void FormLoad() {
         model = new DefaultTableModel();
         tblDaftar.setModel(model);
         addColumn();
@@ -65,7 +68,7 @@ public class LihatPaket extends javax.swing.JFrame {
                     + "JOIN Pelanggan pe ON pp.id_pelanggan = pe.id_pelanggan WHERE (connote LIKE '%" + cari + "%' OR "
                     + "jenis_barang LIKE '%" + cari + "%' OR kota_asal LIKE '%" + cari + "%' OR alamat_asal LIKE '%" + cari + "%' "
                     + "OR nama_pelanggan LIKE '%" + cari + "%' OR kota_tujuan LIKE '%" + cari + "%' OR alamat_tujuan LIKE '%" + cari + "%' "
-                    + "OR nama_penerima LIKE '%" + cari + "%')";
+                    + "OR nama_penerima LIKE '%" + cari + "%') ORDER BY connote";
             
             c.result = c.stat.executeQuery(sql);
 
@@ -135,6 +138,11 @@ public class LihatPaket extends javax.swing.JFrame {
 
         Panel.setBackground(new java.awt.Color(225, 228, 230));
         Panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
+        Panel.addHierarchyListener(new java.awt.event.HierarchyListener() {
+            public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
+                PanelHierarchyChanged(evt);
+            }
+        });
         Panel.setLayout(new javax.swing.BoxLayout(Panel, javax.swing.BoxLayout.Y_AXIS));
 
         PageTitle.setBackground(new java.awt.Color(225, 228, 230));
@@ -290,6 +298,10 @@ public class LihatPaket extends javax.swing.JFrame {
             loadData(txtCari.getText());
         }
     }//GEN-LAST:event_txtCariKeyPressed
+
+    private void PanelHierarchyChanged(java.awt.event.HierarchyEvent evt) {//GEN-FIRST:event_PanelHierarchyChanged
+        FormLoad();
+    }//GEN-LAST:event_PanelHierarchyChanged
 
     /**
      * @param args the command line arguments

@@ -20,6 +20,10 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         initComponents();
         
+        role.add(rdDriver);
+        role.add(rdStaffKantor);
+        
+        rdStaffKantor.setSelected(true);
         this.setResizable(false);
     }
     
@@ -27,23 +31,42 @@ public class Login extends javax.swing.JFrame {
         try {
             DBConnect c = connection;
             c.stat = c.conn.createStatement();
-            String sql = "SELECT * FROM StaffKantor s JOIN Department d ON s.id_department = d.id_department"
-                    + " WHERE username='" + txtUsername.getText() + "' AND password='" + txtPassword.getText() + "'";
+            
+            String sql;
+            if(rdStaffKantor.isSelected()) {
+                sql = "SELECT * FROM StaffKantor s JOIN Department d ON s.id_department = d.id_department"
+                        + " WHERE username='" + txtUsername.getText() + "' AND password='" + txtPassword.getText() + "'";
+            } else {
+                sql = "SELECT * FROM Driver WHERE username='" + txtUsername.getText() + "' AND password='" + txtPassword.getText() + "'";
+            }
             c.result = c.stat.executeQuery(sql);
-            String username = "", role = "";
             int count = 0;
             
-            while(c.result.next()) {
-                count++;
-                username = c.result.getString("nama_staff");
-                role = c.result.getString("nama_department");
+            if(rdStaffKantor.isSelected()) {
+                while(c.result.next()) {
+                    count++;
+                    KMFSession.setId_user(c.result.getString("id_staff"));
+                    KMFSession.setUsername(c.result.getString("username"));
+                    KMFSession.setNama_staff(c.result.getString("nama_staff"));
+                    KMFSession.setRole(c.result.getString("nama_department"));
+                    KMFSession.setKota(c.result.getString("kota"));
+                }
+            } else {
+                while(c.result.next()) {
+                    count++;
+                    KMFSession.setId_user(c.result.getString("id_driver"));
+                    KMFSession.setUsername(c.result.getString("username"));
+                    KMFSession.setNama_staff(c.result.getString("nama_driver"));
+                    KMFSession.setRole("Driver");
+                    KMFSession.setKota(c.result.getString("kota"));
+                }
             }
             
             if(count > 0) {
                 JOptionPane.showMessageDialog(this, "Login berhasil", "Login berhasil", JOptionPane.INFORMATION_MESSAGE);
                 this.setVisible(false);
                 Template app = new Template();
-                app.setNavigation(username, role);
+                app.setNavigation(KMFSession.getNama_staff(), KMFSession.getRole());
                 app.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Useraname atau password salah!", "Login gagal", JOptionPane.ERROR_MESSAGE);
@@ -65,6 +88,7 @@ public class Login extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        role = new javax.swing.ButtonGroup();
         jPanel3 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
@@ -80,12 +104,13 @@ public class Login extends javax.swing.JFrame {
         txtUsername = new javax.swing.JTextField();
         btnLogin = new javax.swing.JButton();
         txtPassword = new javax.swing.JPasswordField();
+        rdStaffKantor = new javax.swing.JRadioButton();
+        rdDriver = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(160, 150, 160, 150));
         jPanel3.setMaximumSize(new java.awt.Dimension(7026, 3218));
         jPanel3.setMinimumSize(new java.awt.Dimension(1000, 577));
         jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
@@ -140,7 +165,7 @@ public class Login extends javax.swing.JFrame {
 
         btnLogin.setBackground(new java.awt.Color(36, 136, 255));
         btnLogin.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnLogin.setForeground(new java.awt.Color(255, 255, 255));
+        btnLogin.setForeground(new java.awt.Color(36, 136, 255));
         btnLogin.setText("LOGIN");
         btnLogin.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
@@ -148,7 +173,7 @@ public class Login extends javax.swing.JFrame {
                 btnLoginActionPerformed(evt);
             }
         });
-        jPanel4.add(btnLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 380, 150, 40));
+        jPanel4.add(btnLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 400, 150, 40));
 
         txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -156,6 +181,16 @@ public class Login extends javax.swing.JFrame {
             }
         });
         jPanel4.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 310, 200, 30));
+
+        rdStaffKantor.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        rdStaffKantor.setText("Staff");
+        rdStaffKantor.setOpaque(false);
+        jPanel4.add(rdStaffKantor, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 350, -1, -1));
+
+        rdDriver.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        rdDriver.setText("Driver");
+        rdDriver.setOpaque(false);
+        jPanel4.add(rdDriver, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 350, -1, -1));
 
         jPanel1.add(jPanel4);
 
@@ -228,6 +263,9 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JRadioButton rdDriver;
+    private javax.swing.JRadioButton rdStaffKantor;
+    private javax.swing.ButtonGroup role;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables

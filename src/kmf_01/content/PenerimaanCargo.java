@@ -6,6 +6,7 @@
 package kmf_01.content;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,6 +16,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import kmf_01.DBConnect;
+import kmf_01.KMF01Lib;
 
 /**
  *
@@ -31,6 +33,10 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
     public PenerimaanCargo() {
         initComponents();
         
+        FormLoad();
+    }
+    
+    private void FormLoad() {
         modelcargo = new DefaultTableModel();
         modeldetail = new DefaultTableModel();
          
@@ -65,7 +71,6 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
         rdAsal.setSelected(false);
         rdTujuan.setSelected(false);
         btnKonfirmasi.setEnabled(false);
-        
     }
     
     private void loadDetail(String id_cargo) {
@@ -93,7 +98,7 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
             
             c.stat.close();
             c.result.close();
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error saat load data barang "  + e);
         }
         
@@ -128,7 +133,7 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
             
             c.stat.close();
             c.result.close();
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error saat load data barang "  + e);
         }
         
@@ -139,7 +144,7 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
     }
     
     public JPanel getPanel() {
-        return PengambilanBarang;
+        return PenerimaanCargo;
     }
     
     private void updatePaket(String status, String connote) {
@@ -152,7 +157,7 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
             connection.pstat.executeUpdate();
             connection.pstat.close();
 
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error pada saat update status paket: " + e);
         }
     }
@@ -168,7 +173,7 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
     private void initComponents() {
 
         rdKonfirmasi = new javax.swing.ButtonGroup();
-        PengambilanBarang = new javax.swing.JPanel();
+        PenerimaanCargo = new javax.swing.JPanel();
         PageTitle = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         Content = new javax.swing.JPanel();
@@ -198,10 +203,15 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
 
-        PengambilanBarang.setBackground(new java.awt.Color(225, 228, 230));
-        PengambilanBarang.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
-        PengambilanBarang.setPreferredSize(new java.awt.Dimension(1176, 768));
-        PengambilanBarang.setLayout(new javax.swing.BoxLayout(PengambilanBarang, javax.swing.BoxLayout.Y_AXIS));
+        PenerimaanCargo.setBackground(new java.awt.Color(225, 228, 230));
+        PenerimaanCargo.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
+        PenerimaanCargo.setPreferredSize(new java.awt.Dimension(1176, 768));
+        PenerimaanCargo.addHierarchyListener(new java.awt.event.HierarchyListener() {
+            public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
+                PenerimaanCargoHierarchyChanged(evt);
+            }
+        });
+        PenerimaanCargo.setLayout(new javax.swing.BoxLayout(PenerimaanCargo, javax.swing.BoxLayout.Y_AXIS));
 
         PageTitle.setBackground(new java.awt.Color(225, 228, 230));
         PageTitle.setMaximumSize(new java.awt.Dimension(32767, 70));
@@ -227,7 +237,7 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
-        PengambilanBarang.add(PageTitle);
+        PenerimaanCargo.add(PageTitle);
 
         Content.setBackground(new java.awt.Color(225, 228, 230));
         Content.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -454,9 +464,9 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
 
         Content.add(Data);
 
-        PengambilanBarang.add(Content);
+        PenerimaanCargo.add(Content);
 
-        getContentPane().add(PengambilanBarang);
+        getContentPane().add(PenerimaanCargo);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -483,22 +493,24 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
             connection.pstat.close();
             
             for(int i = 0; i < modeldetail.getRowCount(); i++) {
-                updatePaket("Paket telah diterima di bandara kota " + status, (String)tblDetailCargo.getValueAt(i, 0));
+                KMF01Lib.UpdateHistory((String)tblDetailCargo.getValueAt(i, 0), "Paket telah diterima di bandara kota " + status);
+                KMF01Lib.UpdateStatus((String)tblDetailCargo.getValueAt(i, 0), "Paket telah diterima di bandara kota " + status);
             }
             
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error pada saat konfirmasi cargo manifest: " + e);
         }
+        
         JOptionPane.showMessageDialog(this, "Konfirmasi penerimaan Cargo Manifest berhasil");
         Clear();
     }//GEN-LAST:event_btnKonfirmasiActionPerformed
 
     private void rdAsalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdAsalActionPerformed
-        loadCargo("Cargo sedang menuju bandara kota asal");
+        loadCargo("Cargo sedang dikirim menuju bandara kota asal");
     }//GEN-LAST:event_rdAsalActionPerformed
 
     private void rdTujuanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdTujuanActionPerformed
-        loadCargo("Cargo telah diberangkatkan dari bandara kota asal");
+        loadCargo("Cargo sedang dikirim menuju bandara kota tujuan");
     }//GEN-LAST:event_rdTujuanActionPerformed
 
     private void tblDaftarCargoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDaftarCargoMouseClicked
@@ -512,6 +524,10 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
         txtIDCargo.setText(id_cargo);
         btnKonfirmasi.setEnabled(true);
     }//GEN-LAST:event_tblDaftarCargoMouseClicked
+
+    private void PenerimaanCargoHierarchyChanged(java.awt.event.HierarchyEvent evt) {//GEN-FIRST:event_PenerimaanCargoHierarchyChanged
+        FormLoad();
+    }//GEN-LAST:event_PenerimaanCargoHierarchyChanged
 
     /**
      * @param args the command line arguments
@@ -568,7 +584,7 @@ public final class PenerimaanCargo extends javax.swing.JFrame {
     private javax.swing.JPanel Data;
     private javax.swing.JPanel Form;
     private javax.swing.JPanel PageTitle;
-    private javax.swing.JPanel PengambilanBarang;
+    private javax.swing.JPanel PenerimaanCargo;
     private javax.swing.JButton btnKonfirmasi;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel14;

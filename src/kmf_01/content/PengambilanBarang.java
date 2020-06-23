@@ -5,7 +5,10 @@
  */
 package kmf_01.content;
 
+import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
@@ -26,15 +29,19 @@ public class PengambilanBarang extends javax.swing.JFrame {
     public PengambilanBarang() {
         initComponents();
         
+        FormLoad();
+    }
+    
+    private void FormLoad() {
         model = new DefaultTableModel();
-         
+        
         tblPermintaanPickup.setModel(model);
         addColumn();
         loadData();
         tampilKantorCabang();
     }
     
-    public void addColumn() {  
+    private void addColumn() {  
         model.addColumn("ID");
         model.addColumn("Nama Pengirim");
         model.addColumn("Kota Asal");
@@ -47,11 +54,11 @@ public class PengambilanBarang extends javax.swing.JFrame {
         model.addColumn("Tgl. Permintaan");
     }
     
-    public void loadData() {
+    private void loadData() {
         model.getDataVector().removeAllElements();
         
         model.fireTableDataChanged();
-        
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
         try {
             connection.stat = connection.conn.createStatement();
             String query = "SELECT * FROM PermintaanPengiriman pe JOIN Pelanggan p ON pe.id_pelanggan=p.id_pelanggan WHERE status_pickup='Diminta'";
@@ -67,7 +74,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
                 obj[5] = connection.result.getString("kota_tujuan");
                 obj[6] = connection.result.getString("alamat_tujuan");
                 obj[7] = connection.result.getString("berat_paket");
-                obj[8] = connection.result.getString("biaya_kirim");
+                obj[8] = formatter.format(connection.result.getDouble("biaya_kirim"));
                 obj[9] = connection.result.getString("tgl_permintaan");
                 
                 model.addRow(obj);
@@ -75,14 +82,14 @@ public class PengambilanBarang extends javax.swing.JFrame {
             connection.stat.close();
             connection.result.close();
             
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error saat load data permintaan pengiriman: " + e);
         }
     }
     
     private void tampilKantorCabang() {
         try {
-            
+            cmbKantorCabang.removeAllItems();
             DBConnect c = connection;
             c.stat = c.conn.createStatement();
             String sql = "SELECT id_kantorcabang, nama_kantorcabang FROM KantorCabangKota";
@@ -94,7 +101,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
             }
             c.stat.close();
             c.result.close();
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error saat load data kantor cabang "  + e);
         }
     }
@@ -128,6 +135,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
         PageTitle = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         Content = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
         Form = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -156,13 +164,18 @@ public class PengambilanBarang extends javax.swing.JFrame {
         jPanel7 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
         tblPermintaanPickup = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         PengambilanBarang.setBackground(new java.awt.Color(225, 228, 230));
         PengambilanBarang.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
+        PengambilanBarang.addHierarchyListener(new java.awt.event.HierarchyListener() {
+            public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
+                PengambilanBarangHierarchyChanged(evt);
+            }
+        });
         PengambilanBarang.setLayout(new javax.swing.BoxLayout(PengambilanBarang, javax.swing.BoxLayout.Y_AXIS));
 
         PageTitle.setBackground(new java.awt.Color(225, 228, 230));
@@ -196,7 +209,10 @@ public class PengambilanBarang extends javax.swing.JFrame {
         Content.setPreferredSize(new java.awt.Dimension(1136, 400));
         Content.setLayout(new javax.swing.BoxLayout(Content, javax.swing.BoxLayout.LINE_AXIS));
 
-        Form.setMaximumSize(new java.awt.Dimension(40, 32767));
+        jScrollPane1.setMaximumSize(new java.awt.Dimension(430, 32767));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(430, 100));
+
+        Form.setMaximumSize(new java.awt.Dimension(400, 32767));
         Form.setPreferredSize(new java.awt.Dimension(400, 548));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
@@ -289,7 +305,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
                             .addComponent(jLabel13))
                         .addGap(23, 23, 23)
                         .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(FormLayout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, FormLayout.createSequentialGroup()
                                 .addComponent(btnBatal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnKirim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -302,7 +318,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
                             .addComponent(txtBeratPaket)
                             .addComponent(txtBiayaPaket)
                             .addComponent(cmbKantorCabang, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addGap(34, 34, 34))
         );
         FormLayout.setVerticalGroup(
             FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -345,14 +361,16 @@ public class PengambilanBarang extends javax.swing.JFrame {
                 .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(cmbKantorCabang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(66, 66, 66)
+                .addGap(36, 36, 36)
                 .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnKirim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnBatal, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(57, Short.MAX_VALUE))
+                .addContainerGap(85, Short.MAX_VALUE))
         );
 
-        Content.add(Form);
+        jScrollPane1.setViewportView(Form);
+
+        Content.add(jScrollPane1);
 
         jPanel5.setMaximumSize(new java.awt.Dimension(10, 32767));
         jPanel5.setOpaque(false);
@@ -362,7 +380,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 10, Short.MAX_VALUE)
+            .addGap(0, 9, Short.MAX_VALUE)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -386,7 +404,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addComponent(jLabel8)
-                .addContainerGap(477, Short.MAX_VALUE))
+                .addContainerGap(447, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -398,6 +416,7 @@ public class PengambilanBarang extends javax.swing.JFrame {
         jPanel4.add(jPanel7);
 
         jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
+        jPanel4.add(jPanel6);
 
         tblPermintaanPickup.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -415,17 +434,15 @@ public class PengambilanBarang extends javax.swing.JFrame {
                 tblPermintaanPickupMouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(tblPermintaanPickup);
+        jScrollPane3.setViewportView(tblPermintaanPickup);
 
-        jPanel6.add(jScrollPane2);
-
-        jPanel4.add(jPanel6);
+        jPanel4.add(jScrollPane3);
 
         javax.swing.GroupLayout DataLayout = new javax.swing.GroupLayout(Data);
         Data.setLayout(DataLayout);
         DataLayout.setHorizontalGroup(
             DataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 746, Short.MAX_VALUE)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE)
         );
         DataLayout.setVerticalGroup(
             DataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -453,23 +470,6 @@ public class PengambilanBarang extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tblPermintaanPickupMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPermintaanPickupMouseClicked
-        int i = tblPermintaanPickup.getSelectedRow();
-        if(i == -1) {
-            return;
-        }
-        
-        id_permintaan = (String) model.getValueAt(i, 0);
-        txtNamaPengirim.setText((String) model.getValueAt(i, 1));
-        txtKotaAsal.setText((String) model.getValueAt(i, 2));
-        txtAlamatAsal.setText((String) model.getValueAt(i, 3));
-        txtNamaPenerima.setText((String) model.getValueAt(i, 4));
-        txtKotaTujuan.setText((String) model.getValueAt(i, 5));
-        txtAlamatTujuan.setText((String) model.getValueAt(i, 6));
-        txtBeratPaket.setText((String) model.getValueAt(i, 7));
-        txtBiayaPaket.setText((String) model.getValueAt(i, 8));
-    }//GEN-LAST:event_tblPermintaanPickupMouseClicked
-
     private void btnKirimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKirimActionPerformed
         try {
             String query = "UPDATE PermintaanPengiriman SET status_pickup=? WHERE id_permintaanpengiriman=?";
@@ -487,6 +487,27 @@ public class PengambilanBarang extends javax.swing.JFrame {
         loadData();
         ClearForm();
     }//GEN-LAST:event_btnKirimActionPerformed
+
+    private void PengambilanBarangHierarchyChanged(java.awt.event.HierarchyEvent evt) {//GEN-FIRST:event_PengambilanBarangHierarchyChanged
+        FormLoad();
+    }//GEN-LAST:event_PengambilanBarangHierarchyChanged
+
+    private void tblPermintaanPickupMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPermintaanPickupMouseClicked
+        int i = tblPermintaanPickup.getSelectedRow();
+        if(i == -1) {
+            return;
+        }
+        
+        id_permintaan = (String) model.getValueAt(i, 0);
+        txtNamaPengirim.setText((String) model.getValueAt(i, 1));
+        txtKotaAsal.setText((String) model.getValueAt(i, 2));
+        txtAlamatAsal.setText((String) model.getValueAt(i, 3));
+        txtNamaPenerima.setText((String) model.getValueAt(i, 4));
+        txtKotaTujuan.setText((String) model.getValueAt(i, 5));
+        txtAlamatTujuan.setText((String) model.getValueAt(i, 6));
+        txtBeratPaket.setText((String) model.getValueAt(i, 7));
+        txtBiayaPaket.setText((String) model.getValueAt(i, 8));
+    }//GEN-LAST:event_tblPermintaanPickupMouseClicked
 
     /**
      * @param args the command line arguments
@@ -551,7 +572,8 @@ public class PengambilanBarang extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable tblPermintaanPickup;
     private javax.swing.JTextField txtAlamatAsal;
     private javax.swing.JTextField txtAlamatTujuan;

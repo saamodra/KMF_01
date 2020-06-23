@@ -5,19 +5,20 @@
  */
 package kmf_01.content;
 
+import java.awt.FlowLayout;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import kmf_01.DBConnect;
+import kmf_01.KMF01Lib;
 
-/**
- *
- * @author samod
- */
+
 public class CargoManifest extends javax.swing.JFrame {
     DBConnect connection = new DBConnect("KMF_01");
     DefaultTableModel model;
@@ -25,14 +26,17 @@ public class CargoManifest extends javax.swing.JFrame {
     ArrayList<String> kota = new ArrayList<>();
     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
     
-    private String bandara_asal = "", bandara_tujuan = "", kota_asal = "", kota_tujuan = "";
+    private String bandara_asal = "", bandara_tujuan = "";
     private int no_Cargo = 0;
     /**
      * Creates new form Navbar
      */
     public CargoManifest() {
         initComponents();
-        
+        FormLoad();
+    }
+    
+    private void FormLoad() {
         model = new DefaultTableModel();
          
         AutoNumber();
@@ -41,7 +45,7 @@ public class CargoManifest extends javax.swing.JFrame {
         tampilBandara();
     }
     
-    public void addColumn() {  
+    private void addColumn() {  
         model.addColumn("No.");
         model.addColumn("Connote");
         model.addColumn("Nama Pengirim");
@@ -56,7 +60,7 @@ public class CargoManifest extends javax.swing.JFrame {
         
     }
     
-    public void AutoNumber() {
+    private void AutoNumber() {
         try {
             String id = "";
             int idBuku, countRow = 0;
@@ -100,16 +104,17 @@ public class CargoManifest extends javax.swing.JFrame {
             }
             c.stat.close();
             c.result.close();
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error saat load data barang "  + e);
         }
     }
     
     public JPanel getPanel() {
-        return PengambilanBarang;
+        return CargoManifest;
     }
     
     public void ClearForm() {
+        
         txtConnote.setEnabled(true);
         txtConnote.setText("");
         txtNamaPengirim.setText("");
@@ -140,10 +145,8 @@ public class CargoManifest extends javax.swing.JFrame {
         obj[7] = txtAlamatTujuan.getText();
         obj[8] = txtBeratPaket.getText();
         obj[9] = txtJenis.getText();
-
+        
         model.addRow(obj);
-
-        ClearForm();
     }
     
     private void insertDetail(String idcargo, String connote) {
@@ -164,7 +167,7 @@ public class CargoManifest extends javax.swing.JFrame {
             connection.pstat.executeUpdate();
             connection.pstat.close();
 
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error pada saat insert data detil cargo : " + e);
         }
     }
@@ -178,10 +181,11 @@ public class CargoManifest extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        PengambilanBarang = new javax.swing.JPanel();
+        CargoManifest = new javax.swing.JPanel();
         PageTitle = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         Content = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
         Form = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -218,7 +222,7 @@ public class CargoManifest extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         txtIDCargo = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
         tblCargo = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         btnSimpan = new javax.swing.JButton();
@@ -227,10 +231,15 @@ public class CargoManifest extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
 
-        PengambilanBarang.setBackground(new java.awt.Color(225, 228, 230));
-        PengambilanBarang.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
-        PengambilanBarang.setPreferredSize(new java.awt.Dimension(1176, 768));
-        PengambilanBarang.setLayout(new javax.swing.BoxLayout(PengambilanBarang, javax.swing.BoxLayout.Y_AXIS));
+        CargoManifest.setBackground(new java.awt.Color(225, 228, 230));
+        CargoManifest.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 20, 1, 20));
+        CargoManifest.setPreferredSize(new java.awt.Dimension(1176, 768));
+        CargoManifest.addHierarchyListener(new java.awt.event.HierarchyListener() {
+            public void hierarchyChanged(java.awt.event.HierarchyEvent evt) {
+                CargoManifestHierarchyChanged(evt);
+            }
+        });
+        CargoManifest.setLayout(new javax.swing.BoxLayout(CargoManifest, javax.swing.BoxLayout.Y_AXIS));
 
         PageTitle.setBackground(new java.awt.Color(225, 228, 230));
         PageTitle.setMaximumSize(new java.awt.Dimension(32767, 70));
@@ -246,7 +255,7 @@ public class CargoManifest extends javax.swing.JFrame {
             .addGroup(PageTitleLayout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(jLabel1)
-                .addContainerGap(1107, Short.MAX_VALUE))
+                .addContainerGap(940, Short.MAX_VALUE))
         );
         PageTitleLayout.setVerticalGroup(
             PageTitleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -256,15 +265,18 @@ public class CargoManifest extends javax.swing.JFrame {
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
-        PengambilanBarang.add(PageTitle);
+        CargoManifest.add(PageTitle);
 
         Content.setBackground(new java.awt.Color(225, 228, 230));
         Content.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
         Content.setPreferredSize(new java.awt.Dimension(1136, 400));
         Content.setLayout(new javax.swing.BoxLayout(Content, javax.swing.BoxLayout.LINE_AXIS));
 
+        jScrollPane1.setMaximumSize(new java.awt.Dimension(400, 32767));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(400, 100));
+
         Form.setMaximumSize(new java.awt.Dimension(40, 32767));
-        Form.setPreferredSize(new java.awt.Dimension(400, 548));
+        Form.setPreferredSize(new java.awt.Dimension(375, 600));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         jLabel2.setText("Form Paket");
@@ -331,6 +343,7 @@ public class CargoManifest extends javax.swing.JFrame {
         jLabel14.setText("Connote");
 
         txtConnote.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtConnote.setEnabled(false);
 
         btnCari.setText("Cari");
         btnCari.addActionListener(new java.awt.event.ActionListener() {
@@ -394,7 +407,7 @@ public class CargoManifest extends javax.swing.JFrame {
                             .addComponent(txtJenis)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, FormLayout.createSequentialGroup()
                                 .addComponent(txtConnote)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnCari))
                             .addGroup(FormLayout.createSequentialGroup()
                                 .addComponent(txtBeratPaket, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -402,7 +415,7 @@ public class CargoManifest extends javax.swing.JFrame {
                                 .addComponent(jLabel13))
                             .addComponent(cmbBandaraAsal, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(cmbBandaraTujuan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(47, Short.MAX_VALUE))
+                .addGap(30, 30, 30))
         );
         FormLayout.setVerticalGroup(
             FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -415,7 +428,7 @@ public class CargoManifest extends javax.swing.JFrame {
                         .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(txtConnote, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnCari))
-                        .addGap(18, 18, 18)
+                        .addGap(24, 24, 24)
                         .addGroup(FormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(txtNamaPengirim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel10))
@@ -463,12 +476,14 @@ public class CargoManifest extends javax.swing.JFrame {
                     .addGroup(FormLayout.createSequentialGroup()
                         .addGap(85, 85, 85)
                         .addComponent(jLabel14)))
-                .addContainerGap(91, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         FormLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnBatal, btnTambah});
 
-        Content.add(Form);
+        jScrollPane1.setViewportView(Form);
+
+        Content.add(jScrollPane1);
 
         jPanel5.setMaximumSize(new java.awt.Dimension(10, 32767));
         jPanel5.setOpaque(false);
@@ -482,7 +497,7 @@ public class CargoManifest extends javax.swing.JFrame {
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 664, Short.MAX_VALUE)
+            .addGap(0, 656, Short.MAX_VALUE)
         );
 
         Content.add(jPanel5);
@@ -506,7 +521,7 @@ public class CargoManifest extends javax.swing.JFrame {
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 396, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 229, Short.MAX_VALUE)
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtIDCargo, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -519,11 +534,12 @@ public class CargoManifest extends javax.swing.JFrame {
                     .addComponent(jLabel8)
                     .addComponent(jLabel9)
                     .addComponent(txtIDCargo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 32, Short.MAX_VALUE))
+                .addGap(0, 22, Short.MAX_VALUE))
         );
 
         jPanel4.add(jPanel7);
 
+        jPanel6.setPreferredSize(new java.awt.Dimension(452, 700));
         jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
 
         tblCargo.setModel(new javax.swing.table.DefaultTableModel(
@@ -537,14 +553,9 @@ public class CargoManifest extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tblCargo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblCargoMouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(tblCargo);
+        jScrollPane3.setViewportView(tblCargo);
 
-        jPanel6.add(jScrollPane2);
+        jPanel6.add(jScrollPane3);
 
         jPanel4.add(jPanel6);
 
@@ -567,20 +578,19 @@ public class CargoManifest extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 535, Short.MAX_VALUE)
+                .addGap(0, 368, Short.MAX_VALUE)
                 .addComponent(btnKosongkan)
                 .addGap(18, 18, 18)
                 .addComponent(btnSimpan))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 102, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(1, 1, 1)
-                        .addComponent(btnKosongkan, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE))
-                    .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnKosongkan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(22, 22, 22))
         );
 
         jPanel4.add(jPanel1);
@@ -589,80 +599,73 @@ public class CargoManifest extends javax.swing.JFrame {
         Data.setLayout(DataLayout);
         DataLayout.setHorizontalGroup(
             DataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 686, Short.MAX_VALUE)
         );
         DataLayout.setVerticalGroup(
             DataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 664, Short.MAX_VALUE)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         Content.add(Data);
 
-        PengambilanBarang.add(Content);
+        CargoManifest.add(Content);
 
-        getContentPane().add(PengambilanBarang);
+        getContentPane().add(CargoManifest);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tblCargoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCargoMouseClicked
-        
-    }//GEN-LAST:event_tblCargoMouseClicked
-
     private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
-        try {
-            connection.stat = connection.conn.createStatement();
-            String query = "SELECT * FROM Paket p JOIN PermintaanPengiriman pe ON pe.id_permintaanpengiriman=p.id_permintaanpengiriman "
-                    + "JOIN Pelanggan c ON c.id_pelanggan = pe.id_pelanggan WHERE connote = '"
-                    + txtConnote.getText() + "' AND status_paket='Paket Siap dikirim'";
-            connection.result = connection.stat.executeQuery(query);
-            boolean found = false;
-            
-            while(connection.result.next()) {
-                ResultSet r = connection.result;
-                txtNamaPengirim.setText(r.getString("nama_pelanggan"));
-                txtKotaAsal.setText(r.getString("kota_asal"));
-                txtAlamatAsal.setText(r.getString("alamat_asal"));
-                txtNamaPenerima.setText(r.getString("nama_penerima"));
-                txtKotaTujuan.setText(r.getString("kota_tujuan"));
-                txtAlamatTujuan.setText(r.getString("alamat_tujuan"));
-                txtBeratPaket.setText(r.getString("berat_paket"));
-                txtJenis.setText(r.getString("jenis_pengiriman"));
-                found = true;
-                
-            }
-            connection.stat.close();
-            connection.result.close();
-            
-            if(found) {
-                txtConnote.setEnabled(false);
-            } else {
-                JOptionPane.showMessageDialog(Content, "Data paket tidak ditemukan!", "Paket tidak ditemukan", JOptionPane.ERROR_MESSAGE);
-            }
-            
-        } catch(Exception e) {
-            System.out.println("Terjadi error saat load data paket : " + e);
-        }
+        JDialog d = new JDialog(this , "Data Paket", true);  
+        d.setLayout( new FlowLayout() );  
+        DialogLihatPaket dialogPaket = new DialogLihatPaket(d);
+        d.add(dialogPaket.getPanel());
+        d.setResizable(false);
+        d.setSize(925, 422);
+        d.setLocationRelativeTo(this);
+        d.setVisible(true);
+        
+        txtConnote.setText(dialogPaket.getPaket()[0]);
+        txtNamaPengirim.setText(dialogPaket.getPaket()[1]);
+        txtNamaPenerima.setText(dialogPaket.getPaket()[2]);
+        txtKotaAsal.setText(dialogPaket.getPaket()[3]);
+        txtKotaTujuan.setText(dialogPaket.getPaket()[4]);
+        txtAlamatAsal.setText(dialogPaket.getPaket()[5]);
+        txtAlamatTujuan.setText(dialogPaket.getPaket()[6]);
+        txtBeratPaket.setText(dialogPaket.getPaket()[7]);
+        txtJenis.setText(dialogPaket.getPaket()[8]);
     }//GEN-LAST:event_btnCariActionPerformed
 
     private void btnBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalActionPerformed
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
         ClearForm();
     }//GEN-LAST:event_btnBatalActionPerformed
 
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
+        boolean checkDuplicate = false;
+        
+        for(int i = 0; i < model.getRowCount(); i++) {
+            if(txtConnote.getText().equals((String) model.getValueAt(i, 1))) {
+                checkDuplicate = true;
+            }
+        }
+        
         if(txtConnote.isEnabled()) {
-            JOptionPane.showMessageDialog(Content, "Data paket belum dipilih", "Gagal", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Data paket belum dipilih", "Gagal", JOptionPane.ERROR_MESSAGE);
+        } else if(checkDuplicate) {
+            JOptionPane.showMessageDialog(this, "Paket telah ditambahkan di cargo", "Gagal", JOptionPane.ERROR_MESSAGE);
         } else {
             if(bandara_asal.equals("") || bandara_tujuan.equals("")) {
                 addCargo();
             } else {
                 if(bandara_tujuan.equals(bandara.get(cmbBandaraTujuan.getSelectedIndex()))) {
                     addCargo();
+                    
                 } else {
                     JOptionPane.showMessageDialog(Content, "Data paket harus dengan kota tujuan yg sama", "Gagal", JOptionPane.ERROR_MESSAGE);
                 }
             }
-            
         }
     }//GEN-LAST:event_btnTambahActionPerformed
 
@@ -691,14 +694,22 @@ public class CargoManifest extends javax.swing.JFrame {
             
             for (int i = 0; i < tblCargo.getRowCount(); i++) {  // Loop through the rows
                 insertDetail(txtIDCargo.getText(), (String)tblCargo.getValueAt(i, 1));
+                KMF01Lib.UpdateHistory((String)tblCargo.getValueAt(i, 1), "Paket sedang dikirim menuju bandara kota asal");
             }
 
-        } catch(Exception e) {
+        } catch(SQLException e) {
             System.out.println("Terjadi error pada saat penambahan cargo manifest: " + e);
         }
         JOptionPane.showMessageDialog(this, "Penambahan Cargo Manifest berhasil");
+        model.getDataVector().removeAllElements();
+        model.fireTableDataChanged();
+        AutoNumber();
         ClearForm();
     }//GEN-LAST:event_btnSimpanActionPerformed
+
+    private void CargoManifestHierarchyChanged(java.awt.event.HierarchyEvent evt) {//GEN-FIRST:event_CargoManifestHierarchyChanged
+        FormLoad();
+    }//GEN-LAST:event_CargoManifestHierarchyChanged
 
     /**
      * @param args the command line arguments
@@ -743,11 +754,11 @@ public class CargoManifest extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel CargoManifest;
     private javax.swing.JPanel Content;
     private javax.swing.JPanel Data;
     private javax.swing.JPanel Form;
     private javax.swing.JPanel PageTitle;
-    private javax.swing.JPanel PengambilanBarang;
     private javax.swing.JButton btnBatal;
     private javax.swing.JButton btnCari;
     private javax.swing.JButton btnKosongkan;
@@ -776,7 +787,8 @@ public class CargoManifest extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable tblCargo;
     private javax.swing.JTextField txtAlamatAsal;
     private javax.swing.JTextField txtAlamatTujuan;

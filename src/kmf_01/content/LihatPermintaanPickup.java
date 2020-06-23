@@ -9,18 +9,15 @@ import java.awt.event.KeyEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import kmf_01.DBConnect;
-import kmf_01.KMF01Lib;
-import kmf_01.KMFSession;
 
 /**
  *
  * @author samod
  */
-public class PendataanBarangMasuk extends javax.swing.JFrame {
+public class LihatPermintaanPickup extends javax.swing.JFrame {
     DBConnect connection = new DBConnect("KMF_01");
     DefaultTableModel model;
 
@@ -28,7 +25,7 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
     /**
      * Creates new form Navbar
      */
-    public PendataanBarangMasuk() {
+    public LihatPermintaanPickup() {
         initComponents();
         
         FormLoad();
@@ -42,14 +39,20 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
     }
     
     private void addColumn() {
-        model.addColumn("Connote");
-        model.addColumn("Jenis Barang");
-        model.addColumn("Tgl. Masuk");
+        model.addColumn("ID");
+        model.addColumn("Nama Pengirim");
         model.addColumn("Kota Asal");
+        model.addColumn("Alamat Asal");
+        model.addColumn("No. HP Pengirim");
+        model.addColumn("Nama Penerima");
         model.addColumn("Kota Tujuan");
         model.addColumn("Alamat Tujuan");
+        model.addColumn("No. HP Penerima");
+        model.addColumn("Jenis Pengiriman");
         model.addColumn("Berat Paket");
-        model.addColumn("Status Paket");
+        model.addColumn("Biaya Kirim");
+        model.addColumn("Tgl. Permintaan");
+        model.addColumn("Status Pickup");
     }
     
     private void loadData(String cari) {
@@ -60,22 +63,31 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
             
             DBConnect c = connection;
             c.stat = c.conn.createStatement();
-            String sql = "SELECT * FROM Paket p JOIN PermintaanPengiriman pe ON p.id_permintaanpengiriman = pe.id_permintaanpengiriman "
-                    + "WHERE kota_tujuan='" + KMFSession.getKota() + "' AND status_paket = 'Paket telah diterima di bandara kota tujuan' AND "
-                    + "(connote LIKE '%" + cari + "%' OR jenis_barang LIKE '%" + cari + "%')";
+            String sql = "SELECT * FROM PermintaanPengiriman pp "
+                    + "JOIN Pelanggan pe ON pp.id_pelanggan = pe.id_pelanggan WHERE (kota_asal LIKE '%" + cari + "%' "
+                    + "OR alamat_asal LIKE '%" + cari + "%' OR nama_pelanggan LIKE '%" + cari + "%' OR kota_tujuan LIKE '%" + cari + "%' OR alamat_tujuan LIKE '%" + cari + "%' "
+                    + "OR nama_penerima LIKE '%" + cari + "%') ORDER BY id_permintaanpengiriman";
+            
             c.result = c.stat.executeQuery(sql);
+
             
             while(c.result.next()) {
                 ResultSet r = c.result;
-                Object obj[] = new Object[8];
-                obj[0] = r.getString("connote");
-                obj[1] = r.getString("jenis_barang");
-                obj[2] = f.format(r.getDate("tgl_masuk"));
-                obj[3] = r.getString("kota_asal");
-                obj[4] = r.getString("kota_tujuan");
-                obj[5] = r.getString("alamat_tujuan");
-                obj[6] = r.getString("berat_paket") + " Kg";
-                obj[7] = r.getString("status_paket");
+                Object obj[] = new Object[14];
+                obj[0] = r.getString("id_permintaanpengiriman");
+                obj[1] = r.getString("nama_pelanggan");
+                obj[2] = r.getString("kota_asal");
+                obj[3] = r.getString("alamat_asal");
+                obj[4] = r.getString("nohp_pelanggan");
+                obj[5] = r.getString("nama_penerima");
+                obj[6] = r.getString("kota_tujuan");
+                obj[7] = r.getString("alamat_tujuan");
+                obj[8] = r.getString("telepon_penerima");
+                obj[9] = r.getString("jenis_pengiriman");
+                obj[10] = r.getString("berat_paket") + " Kg";
+                obj[11] = r.getString("biaya_kirim");
+                obj[12] = f.format(r.getDate("tgl_permintaan"));
+                obj[13] = r.getString("status_pickup");
                 
                 model.addRow(obj);
             }
@@ -118,8 +130,6 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblDaftar = new javax.swing.JTable();
-        jPanel2 = new javax.swing.JPanel();
-        btnTerima = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -137,7 +147,7 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
         PageTitle.setPreferredSize(new java.awt.Dimension(1136, 70));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("Pendataan Barang Masuk");
+        jLabel1.setText("Lihat Permintaan Pickup");
 
         javax.swing.GroupLayout PageTitleLayout = new javax.swing.GroupLayout(PageTitle);
         PageTitle.setLayout(PageTitleLayout);
@@ -146,7 +156,7 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
             .addGroup(PageTitleLayout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(jLabel1)
-                .addContainerGap(884, Short.MAX_VALUE))
+                .addContainerGap(897, Short.MAX_VALUE))
         );
         PageTitleLayout.setVerticalGroup(
             PageTitleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -171,18 +181,18 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
         jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
-        jLabel8.setText("Daftar Paket di Bandara Tujuan");
+        jLabel8.setText("Daftar Permintaan Pickup");
         jPanel7.add(jLabel8);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 517, Short.MAX_VALUE)
+            .addGap(0, 603, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 58, Short.MAX_VALUE)
+            .addGap(0, 60, Short.MAX_VALUE)
         );
 
         jPanel7.add(jPanel3);
@@ -240,36 +250,6 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
 
         jPanel4.add(jPanel6);
 
-        jPanel2.setMaximumSize(new java.awt.Dimension(32767, 80));
-        jPanel2.setPreferredSize(new java.awt.Dimension(1116, 80));
-
-        btnTerima.setText("Terima Barang");
-        btnTerima.setEnabled(false);
-        btnTerima.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTerimaActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(966, Short.MAX_VALUE)
-                .addComponent(btnTerima, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(btnTerima, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(23, Short.MAX_VALUE))
-        );
-
-        jPanel4.add(jPanel2);
-
         javax.swing.GroupLayout DataLayout = new javax.swing.GroupLayout(Data);
         Data.setLayout(DataLayout);
         DataLayout.setHorizontalGroup(
@@ -302,19 +282,8 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnTerimaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTerimaActionPerformed
-        int i = tblDaftar.getSelectedRow();
-        String connote = (String) model.getValueAt(i, 0);
-        String kota_tujuan = (String) model.getValueAt(i, 4);
-        KMF01Lib.UpdateStatus(connote, "Paket telah diterima di kantor cabang tujuan [" + kota_tujuan + "]");
-        KMF01Lib.UpdateHistory(connote, "Paket telah diterima di kantor cabang tujuan [" + kota_tujuan + "]");
-        loadData("");
-        
-        JOptionPane.showMessageDialog(this, "Konfirmasi penerimaan Paket di kantor cabang " + kota_tujuan + " berhasil");
-    }//GEN-LAST:event_btnTerimaActionPerformed
-
     private void tblDaftarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDaftarMouseClicked
-        btnTerima.setEnabled(true);
+        
     }//GEN-LAST:event_tblDaftarMouseClicked
 
     private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
@@ -348,14 +317,110 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(PendataanBarangMasuk.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LihatPermintaanPickup.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PendataanBarangMasuk.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LihatPermintaanPickup.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(PendataanBarangMasuk.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LihatPermintaanPickup.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(PendataanBarangMasuk.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LihatPermintaanPickup.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -392,7 +457,7 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new PendataanBarangMasuk().setVisible(true);
+                new LihatPermintaanPickup().setVisible(true);
             }
         });
     }
@@ -403,11 +468,9 @@ public class PendataanBarangMasuk extends javax.swing.JFrame {
     private javax.swing.JPanel PageTitle;
     private javax.swing.JPanel Panel;
     private javax.swing.JButton btnCari;
-    private javax.swing.JButton btnTerima;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel6;

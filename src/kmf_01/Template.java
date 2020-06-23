@@ -10,7 +10,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
@@ -27,7 +26,6 @@ import kmf_01.content.*;
 public class Template extends javax.swing.JFrame {
     DBConnect connection = new DBConnect("KMF_01");
     DefaultTableModel model;
-    private String id_permintaan;
     
     /**
      * Creates new form Dashboard
@@ -40,28 +38,35 @@ public class Template extends javax.swing.JFrame {
         initComponents();
         
         Dashboard dashboard = new Dashboard();
-        PermintaanPickup permintaanPickup = new PermintaanPickup();
-        InputPaket inputPaket = new InputPaket();
-        CetakTemporaryShipment cetakTemporaryShipment = new CetakTemporaryShipment();
-        PengambilanBarang pengambilanBarang = new PengambilanBarang();
-        CetakConnote cetakConnote = new CetakConnote();
-        CargoManifest cargoManifest = new CargoManifest();
-        PenerimaanCargo penerimaanCargo = new PenerimaanCargo();
-        PengirimanCargo pengirimanCargo = new PengirimanCargo();
-        PendataanBarangMasuk pendataanBarangMasuk = new PendataanBarangMasuk();
-        CetakSMU cetakSMU = new CetakSMU();
-        LihatPaket lihatPaket = new LihatPaket();
+        
+        switch(KMFSession.getRole()) {
+            case "Customer Service" : {
+                CustomerServicePage();
+                break;
+            }
+            case "Dispatch" : {
+                DispatchPage();
+                break;
+            }
+            case "National Transport" : {
+                NTDPage();
+                break;
+            }
+            case "Staff Kantor Cabang" : {
+                StaffKantorPage();
+                break;
+            }
+            case "Driver" : {
+                DriverPage();
+                break;
+            }
+            default : {
+                CustomerServicePage();
+                break;
+            }
+        }
         
         Content.add("dashboard", dashboard.getPanel());
-        Content.add("permintaanPickUp", permintaanPickup.getPanel());
-        Content.add("pengambilanBarang", pengambilanBarang.getPanel());
-        Content.add("cetakConnote", cetakConnote.getPanel());
-        Content.add("tambahPaket", inputPaket.getPanel());
-        Content.add("cetakTemporaryShipment", cetakTemporaryShipment.getPanel());
-        Content.add("cargoManifest", cargoManifest.getPanel());
-        Content.add("penerimaanCargo", penerimaanCargo.getPanel());
-        Content.add("pendataanBarangMasuk", pendataanBarangMasuk.getPanel());
-        Content.add("lihatPaket", lihatPaket.getPanel());
         
         NavBar.add("Customer Service", CS_Dept);
         NavBar.add("Dispatch", Dispatch_Dept);
@@ -72,20 +77,11 @@ public class Template extends javax.swing.JFrame {
         contentLayout = (CardLayout) Content.getLayout();   // Membuat content layout, agar tampilan konten bisa diganti-ganti
         navigationLayout = (CardLayout) NavBar.getLayout(); // Membuat navigation layout, agar tampilan navigasi setiap role bisa diganti-ganti
         
-        setNavigation("Samodra", "Customer Service");
+        contentLayout.show(Content, "dashboard");
+        
         logout_Click(); //Memanggil fungsi button logout supaya bisa berfungsi
         
         toggleNav_Click(); //Untuk toggle Sidebar Navigation
-        
-        
-        RegisterCSMenu(); // Mendaftarkan kumpulan fungsi menu Customer service
-        
-        RegisterDispatchMenu();
-        
-        RegisterStaffKantorMenu();
-        
-        RegisterNTDMenu();
-        
         
         //Untuk toggle menu sidebar menjadi full lagi ketika user klik maximize
         this.addWindowStateListener(new WindowStateListener() {
@@ -108,29 +104,113 @@ public class Template extends javax.swing.JFrame {
         });
     }
     
+    private void StaffKantorPage() {
+        InputPaket inputPaket = new InputPaket();
+        CetakTemporaryShipment cetakTemporaryShipment = new CetakTemporaryShipment();
+        CetakConnote cConnote = new CetakConnote();
+        CargoManifest cargoManifest = new CargoManifest();
+        PendataanBarangMasuk pendataanBarangMasuk = new PendataanBarangMasuk();
+        LihatPaket lihatPaket = new LihatPaket();
+        PengirimanBarang pengirimanBarang = new PengirimanBarang();
+        CekConnote ck = new CekConnote();
+        
+        Content.add("cetakConnote", cConnote.getPanel());
+        Content.add("tambahPaket", inputPaket.getPanel());
+        Content.add("cetakTemporaryShipment", cetakTemporaryShipment.getPanel());
+        Content.add("cargoManifest", cargoManifest.getPanel());
+        Content.add("pendataanBarangMasuk", pendataanBarangMasuk.getPanel());
+        Content.add("lihatPaket", lihatPaket.getPanel());
+        Content.add("pengirimanBarang", pengirimanBarang.getPanel());
+        Content.add("cekConnote", ck.getPanel());
+        
+        RegisterStaffKantorMenu();
+    }
+    
+    private void CustomerServicePage() {
+        PermintaanPickup permintaanPickup = new PermintaanPickup();
+        LihatPermintaanPickup lihatPermintaanPickup = new LihatPermintaanPickup();
+        LihatPaket lihatPaket = new LihatPaket();
+        
+        Content.add("permintaanPickUp", permintaanPickup.getPanel());        
+        Content.add("lihatPermintaanPickup", lihatPermintaanPickup.getPanel());
+        Content.add("lihatPaket", lihatPaket.getPanel());
+        
+        
+        RegisterCSMenu(); // Mendaftarkan kumpulan fungsi menu Customer service
+    }
+    
+    private void NTDPage() {
+        CetakSMU cetakSMU = new CetakSMU();
+        PenerimaanCargo penerimaanCargo = new PenerimaanCargo();
+        PengirimanCargo pengirimanCargo = new PengirimanCargo();
+        
+        Content.add("penerimaanCargo", penerimaanCargo.getPanel());
+        Content.add("cetakSMU", cetakSMU.getPanel());
+        Content.add("pengirimanCargo", pengirimanCargo.getPanel());
+        
+        RegisterNTDMenu();
+    }
+    
+    private void DriverPage() {
+        KonfirmasiPaket kp = new KonfirmasiPaket();
+        
+        Content.add("konfirmasiPaket", kp.getPanel());
+        
+        RegisterDriverMenu();
+    }
+    
+    private void DispatchPage() {
+        PengambilanBarang pBarang = new PengambilanBarang();
+        Content.add("pengambilanBarang", pBarang.getPanel());
+        
+        RegisterDispatchMenu();
+    }
+    
     public void setNavigation(String username, String navName) {
         userNameCS.setText(username);
         userNameDispatch.setText(username);
         userNameStaffKantor.setText(username);
         navigationLayout.show(NavBar, navName);
-    }
+    }    
     
-    public void setContent(String navName) {
-        navigationLayout.show(NavBar, navName);
+    private void RegisterDriverMenu() {
+        konfirmasiPaketMenu.addMouseListener(new MouseAdapter()  
+        {  
+            @Override
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "konfirmasiPaket");
+            }  
+            
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                konfirmasiPaketMenu.setBackground(new Color(43, 43, 43));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                konfirmasiPaketMenu.setBackground(new Color(51,51,51));
+            }
+            
+        }); 
+        
     }
     
     private void RegisterCSMenu() {
         homeMenuCS.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                contentLayout.show(Content, "dashboard");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 homeMenuCS.setBackground(new Color(43, 43, 43));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 homeMenuCS.setBackground(new Color(51,51,51));
             }
@@ -139,31 +219,56 @@ public class Template extends javax.swing.JFrame {
         
         permintaanPickupMenuCS.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {
                 contentLayout.show(Content, "permintaanPickUp");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 permintaanPickupMenuCS.setBackground(new Color(43, 43, 43));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 permintaanPickupMenuCS.setBackground(new Color(51,51,51));
             }
         });
         
+        lihatPermintaanPickupMenu.addMouseListener(new MouseAdapter()  
+        {  
+            @Override
+            public void mouseClicked(MouseEvent e)  
+            {
+                contentLayout.show(Content, "lihatPermintaanPickup");
+            }  
+            
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                lihatPermintaanPickupMenu.setBackground(new Color(43, 43, 43));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                lihatPermintaanPickupMenu.setBackground(new Color(51,51,51));
+            }
+        });
+        
         lihatPaketMenu.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                contentLayout.show(Content, "lihatPaket");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 lihatPaketMenu.setBackground(new Color(45, 45, 45));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 lihatPaketMenu.setBackground(new Color(51,51,51));
             }
@@ -173,17 +278,40 @@ public class Template extends javax.swing.JFrame {
     }
     
     private void RegisterDispatchMenu() {
+        homeMenuDispatch.addMouseListener(new MouseAdapter()  
+        {  
+            @Override
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "dashboard");
+            }  
+            
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                homeMenuDispatch.setBackground(new Color(43, 43, 43));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                homeMenuDispatch.setBackground(new Color(51,51,51));
+            }
+            
+        }); 
+        
         pengambilanBarang.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                contentLayout.show(Content, "pengambilanBarang");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 pengambilanBarang.setBackground(new Color(45, 45, 45));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 pengambilanBarang.setBackground(new Color(51,51,51));
             }
@@ -191,36 +319,128 @@ public class Template extends javax.swing.JFrame {
     }
     
     private void RegisterNTDMenu() {
+        homeMenuNTD.addMouseListener(new MouseAdapter()  
+        {  
+            @Override
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "dashboard");
+            }  
+            
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                homeMenuNTD.setBackground(new Color(43, 43, 43));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                homeMenuNTD.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
         penerimaanCargoMenu.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                contentLayout.show(Content, "penerimaanCargo");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 penerimaanCargoMenu.setBackground(new Color(45, 45, 45));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 penerimaanCargoMenu.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
+        cetakSMUMenu.addMouseListener(new MouseAdapter()  
+        {  
+            @Override
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "cetakSMU");
+            }  
+            
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cetakSMUMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                cetakSMUMenu.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
+        pengirimanCargoMenu.addMouseListener(new MouseAdapter()  
+        {  
+            @Override
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "pengirimanCargo");
+            }  
+            
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                pengirimanCargoMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                pengirimanCargoMenu.setBackground(new Color(51,51,51));
             }
         }); 
         
     }
     
     private void RegisterStaffKantorMenu() {
+        
+//        KMF01Lib.MenuLabel(homeMenuStaffKantor, "dashboard", contentLayout, Content);
+//        KMF01Lib.MenuLabel(temporaryShipmentMenu, "cetakTemporaryShipment", contentLayout, Content);
+//        KMF01Lib.MenuLabel(tambahPaketMenu, "tambahPaket", contentLayout, Content);
+//        KMF01Lib.MenuLabel(cetakConnote, "cetakConnote", contentLayout, Content);
+//        KMF01Lib.MenuLabel(cargoManifestMenu, "cargoManifest", contentLayout, Content);
+//        KMF01Lib.MenuLabel(pendataanBarangMasukMenu, "pendataanBarangMasuk", contentLayout, Content);
+//        KMF01Lib.MenuLabel(pengirimanBarangMenu, "pengirimanBarang", contentLayout, Content);
+//        KMF01Lib.MenuLabel(lihatPaketSKMenu, "lihatPaket", contentLayout, Content);
+        
+        homeMenuStaffKantor.addMouseListener(new MouseAdapter()  
+        {  
+            @Override
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "dashboard");
+            }  
+            
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                homeMenuStaffKantor.setBackground(new Color(43, 43, 43));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                homeMenuStaffKantor.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
         temporaryShipmentMenu.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                contentLayout.show(Content, "cetakTemporaryShipment");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 temporaryShipmentMenu.setBackground(new Color(45, 45, 45));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 temporaryShipmentMenu.setBackground(new Color(51,51,51));
             }
@@ -228,15 +448,18 @@ public class Template extends javax.swing.JFrame {
         
         tambahPaketMenu.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                contentLayout.show(Content, "tambahPaket");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 tambahPaketMenu.setBackground(new Color(45, 45, 45));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 tambahPaketMenu.setBackground(new Color(51,51,51));
             }
@@ -244,15 +467,18 @@ public class Template extends javax.swing.JFrame {
         
         cetakConnote.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                contentLayout.show(Content, "cetakConnote");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 cetakConnote.setBackground(new Color(45, 45, 45));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 cetakConnote.setBackground(new Color(51,51,51));
             }
@@ -260,15 +486,18 @@ public class Template extends javax.swing.JFrame {
         
         cargoManifestMenu.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                contentLayout.show(Content, "cargoManifest");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 cargoManifestMenu.setBackground(new Color(45, 45, 45));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 cargoManifestMenu.setBackground(new Color(51,51,51));
             }
@@ -276,35 +505,79 @@ public class Template extends javax.swing.JFrame {
         
         pendataanBarangMasukMenu.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                contentLayout.show(Content, "pendataanBarangMasuk");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 pendataanBarangMasukMenu.setBackground(new Color(45, 45, 45));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 pendataanBarangMasukMenu.setBackground(new Color(51,51,51));
             }
         }); 
         
+        pengirimanBarangMenu.addMouseListener(new MouseAdapter()  
+        {  
+            @Override
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "pengirimanBarang");
+            }  
+            
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                pengirimanBarangMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                pengirimanBarangMenu.setBackground(new Color(51,51,51));
+            }
+        }); 
+        
         lihatPaketSKMenu.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                contentLayout.show(Content, "lihatPaket");
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 lihatPaketSKMenu.setBackground(new Color(45, 45, 45));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 lihatPaketSKMenu.setBackground(new Color(51,51,51));
             }
-        }); 
+        });
+        
+        cekConnoteMenu.addMouseListener(new MouseAdapter()  
+        {  
+            @Override
+            public void mouseClicked(MouseEvent e)  
+            {  
+               contentLayout.show(Content, "cekConnote");
+            }  
+            
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cekConnoteMenu.setBackground(new Color(45, 45, 45));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                cekConnoteMenu.setBackground(new Color(51,51,51));
+            }
+        });
     }
     
     
@@ -312,6 +585,7 @@ public class Template extends javax.swing.JFrame {
     private void logout_Click() {
         btnLogout.addMouseListener(new MouseAdapter()  
         {  
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                 dispose();
@@ -319,10 +593,12 @@ public class Template extends javax.swing.JFrame {
                 login.setVisible(true);
             }  
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btnLogout.setBackground(new Color(31, 125, 237));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 btnLogout.setBackground(new Color(36,136,255));
             }
@@ -336,26 +612,23 @@ public class Template extends javax.swing.JFrame {
         toggleNav.addMouseListener(new MouseAdapter()  
         {  
             
+            @Override
             public void mouseClicked(MouseEvent e)  
             {  
                 
-                Timer timer = new Timer(1, new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent ae) {
-                        resizeWidth(!state, 4);
-                        if(state) {
-                            if(width == 72) {
-                                ((Timer)ae.getSource()).stop();
-                                state = false;
-                                jLabel2.setText("KMF");
-                            }
-                        } else {
-                            if(width == 240) {
-                                ((Timer)ae.getSource()).stop();
-                                state = true;
-                                jLabel2.setText("PT. KMF");
-                            }
+                Timer timer = new Timer(1, (ActionEvent ae) -> {
+                    resizeWidth(!state, 4);
+                    if(state) {
+                        if(width == 72) {
+                            ((Timer)ae.getSource()).stop();
+                            state = false;
+                            jLabel2.setText("KMF");
+                        }
+                    } else {
+                        if(width == 240) {
+                            ((Timer)ae.getSource()).stop();
+                            state = true;
+                            jLabel2.setText("PT. KMF");
                         }
                     }
                 });
@@ -374,10 +647,12 @@ public class Template extends javax.swing.JFrame {
                 TopNav.setDividerLocation(width);
             }
             
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 toggleNav.setBackground(new Color(31, 125, 237));
             }
 
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 toggleNav.setBackground(new Color(36,136,255));
             }
@@ -413,6 +688,7 @@ public class Template extends javax.swing.JFrame {
         userNameCS = new javax.swing.JLabel();
         roleCS = new javax.swing.JLabel();
         lihatPaketMenu = new javax.swing.JLabel();
+        lihatPermintaanPickupMenu = new javax.swing.JLabel();
         Dispatch_Dept = new javax.swing.JPanel();
         userNameDispatch = new javax.swing.JLabel();
         roleDispatch = new javax.swing.JLabel();
@@ -431,14 +707,21 @@ public class Template extends javax.swing.JFrame {
         pendataanBarangMasukMenu = new javax.swing.JLabel();
         pengirimanBarangMenu = new javax.swing.JLabel();
         lihatPaketSKMenu = new javax.swing.JLabel();
+        cekConnoteMenu = new javax.swing.JLabel();
         National_Transport_Dept = new javax.swing.JPanel();
-        homeMenuCS1 = new javax.swing.JLabel();
+        homeMenuNTD = new javax.swing.JLabel();
         cetakSMUMenu = new javax.swing.JLabel();
         imageProfileCS1 = new javax.swing.JLabel();
         userNameCS1 = new javax.swing.JLabel();
         roleCS1 = new javax.swing.JLabel();
         pengirimanCargoMenu = new javax.swing.JLabel();
         penerimaanCargoMenu = new javax.swing.JLabel();
+        DriverMenu = new javax.swing.JPanel();
+        homeMenuCS1 = new javax.swing.JLabel();
+        konfirmasiPaketMenu = new javax.swing.JLabel();
+        imageProfileCS2 = new javax.swing.JLabel();
+        userNameCS2 = new javax.swing.JLabel();
+        roleCS2 = new javax.swing.JLabel();
         Content = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -576,6 +859,17 @@ public class Template extends javax.swing.JFrame {
         lihatPaketMenu.setIconTextGap(25);
         lihatPaketMenu.setOpaque(true);
 
+        lihatPermintaanPickupMenu.setBackground(new java.awt.Color(51, 51, 51));
+        lihatPermintaanPickupMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lihatPermintaanPickupMenu.setForeground(new java.awt.Color(255, 255, 255));
+        lihatPermintaanPickupMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        lihatPermintaanPickupMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/down_left_24px.png"))); // NOI18N
+        lihatPermintaanPickupMenu.setText("Lihat Permintaan Pickup");
+        lihatPermintaanPickupMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        lihatPermintaanPickupMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lihatPermintaanPickupMenu.setIconTextGap(25);
+        lihatPermintaanPickupMenu.setOpaque(true);
+
         javax.swing.GroupLayout CS_DeptLayout = new javax.swing.GroupLayout(CS_Dept);
         CS_Dept.setLayout(CS_DeptLayout);
         CS_DeptLayout.setHorizontalGroup(
@@ -591,6 +885,7 @@ public class Template extends javax.swing.JFrame {
                     .addComponent(roleCS))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(lihatPaketMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(lihatPermintaanPickupMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         CS_DeptLayout.setVerticalGroup(
             CS_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -607,8 +902,10 @@ public class Template extends javax.swing.JFrame {
                 .addGap(0, 0, 0)
                 .addComponent(permintaanPickupMenuCS, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
+                .addComponent(lihatPermintaanPickupMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
                 .addComponent(lihatPaketMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(432, Short.MAX_VALUE))
+                .addContainerGap(387, Short.MAX_VALUE))
         );
 
         NavBar.add(CS_Dept, "card2");
@@ -785,6 +1082,17 @@ public class Template extends javax.swing.JFrame {
         lihatPaketSKMenu.setIconTextGap(25);
         lihatPaketSKMenu.setOpaque(true);
 
+        cekConnoteMenu.setBackground(new java.awt.Color(51, 51, 51));
+        cekConnoteMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        cekConnoteMenu.setForeground(new java.awt.Color(255, 255, 255));
+        cekConnoteMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        cekConnoteMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/note_24px.png"))); // NOI18N
+        cekConnoteMenu.setText("Cek Connote");
+        cekConnoteMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        cekConnoteMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        cekConnoteMenu.setIconTextGap(25);
+        cekConnoteMenu.setOpaque(true);
+
         javax.swing.GroupLayout StaffKantorLayout = new javax.swing.GroupLayout(StaffKantor);
         StaffKantor.setLayout(StaffKantorLayout);
         StaffKantorLayout.setHorizontalGroup(
@@ -805,6 +1113,7 @@ public class Template extends javax.swing.JFrame {
             .addComponent(pendataanBarangMasukMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(pengirimanBarangMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(lihatPaketSKMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(cekConnoteMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         StaffKantorLayout.setVerticalGroup(
             StaffKantorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -832,23 +1141,25 @@ public class Template extends javax.swing.JFrame {
                 .addComponent(pengirimanBarangMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(lihatPaketSKMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(0, 0, 0)
+                .addComponent(cekConnoteMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(162, Short.MAX_VALUE))
         );
 
         NavBar.add(StaffKantor, "card3");
 
         National_Transport_Dept.setBackground(new java.awt.Color(51, 51, 51));
 
-        homeMenuCS1.setBackground(new java.awt.Color(51, 51, 51));
-        homeMenuCS1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        homeMenuCS1.setForeground(new java.awt.Color(255, 255, 255));
-        homeMenuCS1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        homeMenuCS1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/home_24px.png"))); // NOI18N
-        homeMenuCS1.setText("Home");
-        homeMenuCS1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
-        homeMenuCS1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        homeMenuCS1.setIconTextGap(25);
-        homeMenuCS1.setOpaque(true);
+        homeMenuNTD.setBackground(new java.awt.Color(51, 51, 51));
+        homeMenuNTD.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        homeMenuNTD.setForeground(new java.awt.Color(255, 255, 255));
+        homeMenuNTD.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        homeMenuNTD.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/home_24px.png"))); // NOI18N
+        homeMenuNTD.setText("Home");
+        homeMenuNTD.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        homeMenuNTD.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        homeMenuNTD.setIconTextGap(25);
+        homeMenuNTD.setOpaque(true);
 
         cetakSMUMenu.setBackground(new java.awt.Color(51, 51, 51));
         cetakSMUMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -899,7 +1210,7 @@ public class Template extends javax.swing.JFrame {
         National_Transport_Dept.setLayout(National_Transport_DeptLayout);
         National_Transport_DeptLayout.setHorizontalGroup(
             National_Transport_DeptLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(homeMenuCS1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(homeMenuNTD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(cetakSMUMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(National_Transport_DeptLayout.createSequentialGroup()
                 .addContainerGap()
@@ -923,7 +1234,7 @@ public class Template extends javax.swing.JFrame {
                         .addComponent(roleCS1))
                     .addComponent(imageProfileCS1))
                 .addGap(36, 36, 36)
-                .addComponent(homeMenuCS1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(homeMenuNTD, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(cetakSMUMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
@@ -934,6 +1245,76 @@ public class Template extends javax.swing.JFrame {
         );
 
         NavBar.add(National_Transport_Dept, "card2");
+
+        DriverMenu.setBackground(new java.awt.Color(51, 51, 51));
+
+        homeMenuCS1.setBackground(new java.awt.Color(51, 51, 51));
+        homeMenuCS1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        homeMenuCS1.setForeground(new java.awt.Color(255, 255, 255));
+        homeMenuCS1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        homeMenuCS1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/home_24px.png"))); // NOI18N
+        homeMenuCS1.setText("Home");
+        homeMenuCS1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        homeMenuCS1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        homeMenuCS1.setIconTextGap(25);
+        homeMenuCS1.setOpaque(true);
+
+        konfirmasiPaketMenu.setBackground(new java.awt.Color(51, 51, 51));
+        konfirmasiPaketMenu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        konfirmasiPaketMenu.setForeground(new java.awt.Color(255, 255, 255));
+        konfirmasiPaketMenu.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        konfirmasiPaketMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/checked_24px.png"))); // NOI18N
+        konfirmasiPaketMenu.setText("Konfirmasi Paket");
+        konfirmasiPaketMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 25, 1, 1));
+        konfirmasiPaketMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        konfirmasiPaketMenu.setIconTextGap(25);
+        konfirmasiPaketMenu.setOpaque(true);
+
+        imageProfileCS2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        imageProfileCS2.setForeground(new java.awt.Color(255, 255, 255));
+        imageProfileCS2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/kmf_01/images/male_user_50px.png"))); // NOI18N
+
+        userNameCS2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        userNameCS2.setForeground(new java.awt.Color(255, 255, 255));
+        userNameCS2.setText("Driver 1");
+
+        roleCS2.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        roleCS2.setForeground(new java.awt.Color(255, 255, 255));
+        roleCS2.setText("Driver");
+
+        javax.swing.GroupLayout DriverMenuLayout = new javax.swing.GroupLayout(DriverMenu);
+        DriverMenu.setLayout(DriverMenuLayout);
+        DriverMenuLayout.setHorizontalGroup(
+            DriverMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(homeMenuCS1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(konfirmasiPaketMenu, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+            .addGroup(DriverMenuLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(imageProfileCS2)
+                .addGap(18, 18, 18)
+                .addGroup(DriverMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(userNameCS2)
+                    .addComponent(roleCS2))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        DriverMenuLayout.setVerticalGroup(
+            DriverMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(DriverMenuLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(DriverMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(DriverMenuLayout.createSequentialGroup()
+                        .addComponent(userNameCS2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(roleCS2))
+                    .addComponent(imageProfileCS2))
+                .addGap(36, 36, 36)
+                .addComponent(homeMenuCS1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(konfirmasiPaketMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(477, Short.MAX_VALUE))
+        );
+
+        NavBar.add(DriverMenu, "card2");
 
         BottomNav.setLeftComponent(NavBar);
 
@@ -990,6 +1371,7 @@ public class Template extends javax.swing.JFrame {
     private javax.swing.JSplitPane Container;
     private javax.swing.JPanel Content;
     private javax.swing.JPanel Dispatch_Dept;
+    private javax.swing.JPanel DriverMenu;
     private javax.swing.JPanel LeftTopNav;
     private javax.swing.JPanel National_Transport_Dept;
     private javax.swing.JPanel NavBar;
@@ -998,21 +1380,26 @@ public class Template extends javax.swing.JFrame {
     private javax.swing.JSplitPane TopNav;
     private javax.swing.JLabel btnLogout;
     private javax.swing.JLabel cargoManifestMenu;
+    private javax.swing.JLabel cekConnoteMenu;
     private javax.swing.JLabel cetakConnote;
     private javax.swing.JLabel cetakSMUMenu;
     private javax.swing.JLabel homeMenuCS;
     private javax.swing.JLabel homeMenuCS1;
     private javax.swing.JLabel homeMenuDispatch;
+    private javax.swing.JLabel homeMenuNTD;
     private javax.swing.JLabel homeMenuStaffKantor;
     private javax.swing.JLabel imageProfileCS;
     private javax.swing.JLabel imageProfileCS1;
+    private javax.swing.JLabel imageProfileCS2;
     private javax.swing.JLabel imageProfileDispatch;
     private javax.swing.JLabel imageProfileDispatch1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JLabel konfirmasiPaketMenu;
     private javax.swing.JLabel lihatPaketMenu;
     private javax.swing.JLabel lihatPaketSKMenu;
+    private javax.swing.JLabel lihatPermintaanPickupMenu;
     private javax.swing.JLabel pendataanBarangMasukMenu;
     private javax.swing.JLabel penerimaanCargoMenu;
     private javax.swing.JLabel pengambilanBarang;
@@ -1021,6 +1408,7 @@ public class Template extends javax.swing.JFrame {
     private javax.swing.JLabel permintaanPickupMenuCS;
     private javax.swing.JLabel roleCS;
     private javax.swing.JLabel roleCS1;
+    private javax.swing.JLabel roleCS2;
     private javax.swing.JLabel roleDispatch;
     private javax.swing.JLabel roleStaffKantor;
     private javax.swing.JLabel tambahPaketMenu;
@@ -1028,6 +1416,7 @@ public class Template extends javax.swing.JFrame {
     private javax.swing.JLabel toggleNav;
     private javax.swing.JLabel userNameCS;
     private javax.swing.JLabel userNameCS1;
+    private javax.swing.JLabel userNameCS2;
     private javax.swing.JLabel userNameDispatch;
     private javax.swing.JLabel userNameStaffKantor;
     // End of variables declaration//GEN-END:variables
